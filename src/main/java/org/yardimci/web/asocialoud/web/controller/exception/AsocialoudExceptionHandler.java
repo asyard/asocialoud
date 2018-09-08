@@ -19,10 +19,13 @@ public class AsocialoudExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handle(Exception ex,
                                          HttpServletRequest request, HttpServletResponse response) {
-        logger.error("Error will be handled", ex);
+        logger.error("Error will be handled : " + ex.getClass());
         if (ex instanceof NullPointerException) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } else if (ex instanceof MemberNotFoundException) {
+         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
         }
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }
