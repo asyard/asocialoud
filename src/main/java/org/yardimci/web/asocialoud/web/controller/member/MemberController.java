@@ -42,7 +42,7 @@ public class MemberController {
 
         if (!member.isPresent())
             throw new MemberNotFoundException("id-" + id);
-
+            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         //return memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
         return member.get();
     }

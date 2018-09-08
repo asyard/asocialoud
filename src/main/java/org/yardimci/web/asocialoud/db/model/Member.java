@@ -15,8 +15,8 @@ public class Member {
     private String loginName;
 
 
-    @Column(name = "name", nullable = false)
-    private String memberName;
+    @Column(name = "realname", nullable = false)
+    private String realName;
 
     public Long getId() {
         return id;
@@ -34,17 +34,17 @@ public class Member {
         this.loginName = loginName;
     }
 
-    public String getMemberName() {
-        return memberName;
+    public String getRealName() {
+        return realName;
     }
 
-    public void setMemberName(String memberName) {
-        this.memberName = memberName;
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
     @Override
     public String toString() {
-        return String.format("Member [id=%s, name=%s, loginName=%s]", id, memberName, loginName);
+        return String.format("Member [id=%s, name=%s, loginName=%s]", id, realName, loginName);
     }
 
 }

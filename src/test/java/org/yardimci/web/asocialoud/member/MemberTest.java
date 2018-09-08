@@ -24,7 +24,7 @@ public class MemberTest {
     private Member createMember() {
         Member member = new Member();
         member.setLoginName("testmember");
-        member.setMemberName("Test Member");
+        member.setRealName("Test Member");
         return member;
     }
 
