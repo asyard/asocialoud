@@ -1,0 +1,64 @@
+1. Go and select techs : https://start.spring.io/
+
+2. Change banner resources\banner.txt
+
+3. Remove restarts :
+
+3.1 Add following to pom :
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+    <optional>true</optional>
+</dependency>
+
+3.2 Add following configuration to pom under pring-boot-maven-plugin artifact :
+<addResources>true</addResources>
+
+4. Add application.properties file under \resources and configure port number etc.
+
+5. Put main config class (Asocialoud.java) under base package
+
+6. logback comes default with spring boot. Configure in application.properties file.
+
+
+
+
+
+x1. Remove default Whitelabel Error Page, add error pages under \resources\public\error
+???????? thymyleaf does not require a controller for errors.
+
+- You dont even need to code extra line for this if you are using spring boot, just need to construct a directory as resources/public/error and put your custom error page there with file name as HTTP status code as a standard. Here in the case, it would be 404.html
+
+
+x2. Change favicon : add favicon.ico under resources directory
+Or put in a custom location and create a handler
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
