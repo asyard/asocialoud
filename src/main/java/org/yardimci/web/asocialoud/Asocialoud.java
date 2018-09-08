@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @EnableJpaRepositories("org.yardimci.web.asocialoud.db.repository")
 @EntityScan("org.yardimci.web.asocialoud.db.model")
-@SpringBootApplication
+@SpringBootApplication // equals @Configuration, @EnableAutoConfiguration, and @ComponentScan
 //@EnableAutoConfiguration(exclude = {ErrorMvcAutoConfiguration.class})
 public class Asocialoud {
 
