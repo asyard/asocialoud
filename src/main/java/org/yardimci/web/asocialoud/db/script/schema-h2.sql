@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS tbl_country (
+    id   INTEGER      NOT NULL AUTO_INCREMENT,
+    name VARCHAR(128) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS tbl_members (
+    id   INTEGER      NOT NULL AUTO_INCREMENT,
+    username VARCHAR(128) NOT NULL,
+    realname VARCHAR (128),
+    PRIMARY KEY (id)
+);
+
