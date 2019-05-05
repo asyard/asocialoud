@@ -18,12 +18,6 @@ public class MemberTest {
 
     private static final String API_ROOT = "http://localhost:8070/api/members";
 
-    private Member createMember() {
-        Member member = new Member();
-        member.setLoginName("testmember");
-        member.setRealName("Test Member");
-        return member;
-    }
 
     @Test
     public void whenGetAllMembers_thenOK() {
@@ -31,7 +25,7 @@ public class MemberTest {
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
     }
 
-    @Test
+    //@Test
     public void whenCreateNewMember_thenCreated() {
         Member member = createMember();
         Response response = RestAssured.given()
@@ -42,5 +36,11 @@ public class MemberTest {
         assertEquals(HttpStatus.CREATED.value(), response.getStatusCode());
     }
 
+    private Member createMember() {
+        Member member = new Member();
+        member.setLoginName("testmember");
+        member.setRealName("Test Member");
+        return member;
+    }
 
 }
