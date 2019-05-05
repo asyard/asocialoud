@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zk>
+    <config-name>asocialoud-zkspringboot-config</config-name>
+
+    <!--enable websocket support in ZK 8.5.1 (ZK-3799)  -->
+    <!--listener>
+        <listener-class>org.zkoss.zkmax.au.websocket.WebSocketWebAppInit</listener-class>
+    </listener-->
+
+    <desktop-config>
+        <desktop-timeout>3600</desktop-timeout>
+    </desktop-config>
+
+    <device-config>
+        <device-type>ajax</device-type>
+        <unavailable-message>
+            <![CDATA[
+                <p style="color:red">Sorry, JavaScript must be enabled to use Asocialoud</p>
+            ]]>
+        </unavailable-message>
+    </device-config>
+
+    <!--session-config>
+        <session-timeout>1800</session-timeout>
+        <device-type>ajax</device-type>
+        <automatic-timeout/>
+        <timeout-uri>/timeout.zul</timeout-uri>
+    </session-config-->
+
+    <system-config>
+        <crawlable>true</crawlable>
+    </system-config>
+
+
+</zk>

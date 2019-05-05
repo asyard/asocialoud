@@ -1,0 +1,8 @@
+<zk>
+    <window border="normal" apply="org.yardimci.web.asocialoud.web.ui.TestComposer">
+        Welcome to Asocialoud!
+
+        <a href = "secure/profile">click to see your profile</a>
+
+    </window>
+</zk>
