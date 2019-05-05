@@ -13,13 +13,10 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { Asocialoud.class }, webEnvironment
-        = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(classes = { Asocialoud.class }, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class MemberTest {
 
-
-    private static final String API_ROOT
-            = "http://localhost:8070/api/members";
+    private static final String API_ROOT = "http://localhost:8070/api/members";
 
     private Member createMember() {
         Member member = new Member();
@@ -28,10 +25,9 @@ public class MemberTest {
         return member;
     }
 
-    //@Test
-    public void whenGetAllBooks_thenOK() {
+    @Test
+    public void whenGetAllMembers_thenOK() {
         Response response = RestAssured.get(API_ROOT);
-
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
     }
 
@@ -48,8 +44,3 @@ public class MemberTest {
 
 
 }
-
-
-
-
-
