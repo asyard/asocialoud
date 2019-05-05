@@ -61,7 +61,7 @@ public class MemberController {
 
     @PutMapping("/{id}")
     public Member updateMember(@RequestBody Member member, @PathVariable Long id) {
-        if (member.getId() != id) {
+        if (member.getId().longValue() != id.longValue()) {
             throw new MemberIdMismatchException("mismatch : " + id);
         }
         memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
