@@ -1,5 +1,7 @@
 # version format
-version: 1.0.{build}
+version: '{build}'
+
+os: Windows Server 2012
 
 # you can use {branch} name in version format too
 # version: 1.0.{build}-{branch}
