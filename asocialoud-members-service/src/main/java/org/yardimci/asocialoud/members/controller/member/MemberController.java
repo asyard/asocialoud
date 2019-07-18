@@ -15,6 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/members")
+//@CrossOrigin(origins = "http://localhost:6600")
 public class MemberController {
 
     private static final Logger logger = LoggerFactory.getLogger(MemberController.class);
