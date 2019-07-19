@@ -80,8 +80,8 @@ public class MemberController {
 
         Member byLoginName = memberRepository.findByLoginName(member.getLoginName());
         if (byLoginName != null) {
-            logger.warn("Member alreaady exists");
-            throw new MemberAlreadyExistsException();
+            logger.warn("Member already exists");
+            throw new MemberAlreadyExistsException("error.usernameistaken");
         }
 
         return memberRepository.save(member);
