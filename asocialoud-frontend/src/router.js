@@ -1,6 +1,7 @@
 import Register from './components/Register'
 import Login from './components/Login'
 import App from './App'
+import MemberArea from './components/MemberArea'
 
 
 
@@ -9,6 +10,7 @@ const routes = [
     { path: '/dsf', component: App },
     { path: '/register', component: Register },
     { path: '/login', component: Login },
+    { path: '/feed', component: MemberArea },
 ];
 
 //const router = new Router({

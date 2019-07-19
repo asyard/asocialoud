@@ -52,6 +52,7 @@
                     this.response = response.data;
                     this.showResponse = true;
                     this.loginError = false;
+                    this.$router.push('/feed');
                 })
                     .catch(e => {
                         this.loginError = true;
