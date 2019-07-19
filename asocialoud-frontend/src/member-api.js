@@ -20,9 +20,9 @@ export default {
     login: (loginNameText, realNameText) => instance.post('/login', {loginName: loginNameText, realName: realNameText}),
 
     // (R)ead
-    getAll: () => instance.get('users', {
+    getAll: () => instance.get('/', {
         transformResponse: [function (data) {
-            return data? JSON.parse(data)._embedded.users : data;
+            return data? JSON.parse(data) : data;
         }]
     }),
     // (U)pdate
