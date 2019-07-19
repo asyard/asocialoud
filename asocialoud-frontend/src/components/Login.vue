@@ -4,10 +4,14 @@
 
         <h3>Just some database interaction...</h3>
 
-        <input type="text" v-model="user.userName" placeholder="user name">
-        <input type="text" v-model="user.realName" placeholder="real name">
 
-        <button @click="login()">Login</button>
+
+        <form @submit.prevent="login()">
+            <input type="text" placeholder="username" v-model="user.userName">
+            <input type="password" placeholder="password" v-model="user.realName">
+            <b-btn variant="success" type="submit">Login</b-btn>
+            <p v-if="loginError" class="error">Bad login information</p>
+        </form>
 
 
 
@@ -22,18 +26,15 @@
     </div>
 
 
-
 </template>
 
 <script>
-    import userapi from '../member-api';
-
     export default {
         name: "Login",
-        data () {
+        data() {
             return {
                 response: [],
-                errors:[],
+                errors: [],
                 loginError: false,
                 user: {
                     userName: '',
@@ -46,14 +47,12 @@
             }
         },
         methods: {
-            login () {
-                userapi.login(this.user.userName, this.user.realName).then(response => {
-                    // JSON responses are automatically parsed.
-                    this.response = response.data;
-                    this.showResponse = true;
-                    this.loginError = false;
-                    this.$router.push('/feed');
-                })
+            login() {
+                this.$store.dispatch("login", {username: this.user.userName, password: this.user.realName})
+                    .then(() => {
+                        this.loginError = false;
+                        this.$router.push('/feed');
+                    })
                     .catch(e => {
                         this.loginError = true;
                         this.errors.push(e);

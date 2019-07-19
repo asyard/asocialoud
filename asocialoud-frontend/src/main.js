@@ -5,6 +5,8 @@ import routes from './router'
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import store from './store'
+
 
 Vue.config.productionTip = false
 
@@ -28,6 +30,7 @@ const router = new VueRouter({/*mode: 'history', */routes});
 
 
 new Vue({
-    render: h => h(App),
     router,
+    store,
+    render: h => h(App),
 }).$mount('#app')

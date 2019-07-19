@@ -1,7 +1,7 @@
 <template>
     <div class="user">
 
-        <h2>Hello, this is your member area</h2>
+        <h2>Hello {{loggedInUserName}}, this is your member area</h2>
 
 
         <button @click="listMembers()">List Members</button>
@@ -24,12 +24,14 @@
 
 <script>
     import userapi from '../member-api';
+    import store from '../store';
 
     export default {
         name: "MemberArea",
         data() {
             return {
                 hasData : false,
+                loggedInUserName: store.getters.getUserName,
                 memberList: '',
                 errors: [],
                 users: {
