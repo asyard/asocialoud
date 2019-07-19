@@ -10,7 +10,8 @@
         <button @click="createNewUser()">Create User</button>
 
         <div v-if="showResponse"><h6>User created with Id: {{ user.id }}</h6></div>
-        <div v-if="!errors.isEmpty"><h6>{{ errors }}</h6></div>
+
+        <div v-if="hasError"><h6>{{ errors }}</h6></div>
     </div>
 </template>
 
@@ -22,6 +23,7 @@
         data () {
             return {
                 response: [],
+                hasError: false,
                 errors: [],
                 user: {
                     userName: '',
@@ -37,13 +39,14 @@
             createNewUser () {
                 userapi.createNew(this.user.userName, this.user.realName).then(response => {
                     // JSON responses are automatically parsed.
+                    this.showResponse = true;
+                    this.hasError = false;
                     this.response = response.data;
                     this.user.id = response.data;
-                    this.$log.success('Created new User with Id ' + response.data);
-                    this.showResponse = true
                 })
                     .catch(e => {
-                        this.errors.push(e)
+                        this.hasError = true;
+                        this.errors.push(e);
                     })
             }
         }
