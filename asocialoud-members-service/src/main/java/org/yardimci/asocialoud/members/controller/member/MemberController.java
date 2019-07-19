@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.yardimci.asocialoud.members.controller.MemberResponse;
 import org.yardimci.asocialoud.members.controller.exception.MemberAlreadyExistsException;
 import org.yardimci.asocialoud.members.controller.exception.MemberIdMismatchException;
 import org.yardimci.asocialoud.members.controller.exception.MemberInfoMissingException;
@@ -13,6 +14,9 @@ import org.yardimci.asocialoud.members.controller.exception.MemberNotFoundExcept
 import org.yardimci.asocialoud.members.db.model.Member;
 import org.yardimci.asocialoud.members.db.repository.MemberRepository;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -26,9 +30,19 @@ public class MemberController {
     private MemberRepository memberRepository;
 
     @GetMapping
-    public Iterable findAll() {
+    public MemberResponse findAll() {
         logger.info("Retrieving all members");
-        return memberRepository.findAll();
+        MemberResponse memberResponse = new MemberResponse();
+
+        List<Member> memberList = new ArrayList<>();
+
+        Iterator<Member> memberIterator = memberRepository.findAll().iterator();
+
+        memberIterator.forEachRemaining(memberList::add);
+
+        memberResponse.setData(memberList);
+        memberResponse.setStatus(HttpStatus.OK.toString());
+        return memberResponse;
     }
 
     @GetMapping("/{memberName}")
