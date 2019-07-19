@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
-//import VueRouter from 'vue-router'
-import router from './router'
+import VueRouter from 'vue-router'
+import routes from './router'
 
 Vue.config.productionTip = false
 
@@ -17,11 +17,13 @@ const options = {
     showConsoleColors: true
 };
 
-//Vue.use(VueRouter);
+Vue.use(VueRouter);
 Vue.use(VueLogger, options);
+
+const router = new VueRouter({/*mode: 'history', */routes});
 
 
 new Vue({
-    router,
     render: h => h(App),
+    router,
 }).$mount('#app')

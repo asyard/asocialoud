@@ -1,17 +1,22 @@
-import Vue from 'vue'
-import Router from 'vue-router'
 import Register from './components/Register'
-import Login from '@/components/Login'
-import HelloWorld from '@/components/HelloWorld'
+import Login from './components/Login'
+import App from './App'
 
-Vue.use(Router);
 
-const router = new Router({
-    mode: 'history', // uris without hashes #, see https://router.vuejs.org/guide/essentials/history-mode.html#html5-history-mode
-    routes: [
-        { path: '/', component: HelloWorld},
-        { path: '/register', component: Register},
-        { path: '/login', component: Login },
+
+
+const routes = [
+    { path: '/dsf', component: App },
+    { path: '/register', component: Register },
+    { path: '/login', component: Login },
+];
+
+//const router = new Router({
+//    mode: 'history', // uris without hashes #, see https://router.vuejs.org/guide/essentials/history-mode.html#html5-history-mode
+//    routes: [
+//        { path: '/', component: HelloWorld},
+//        { path: '/register', component: Register},
+//        { path: '/login', component: Login },
         /*{
             path: '/protected',
             component: Protected,
@@ -21,9 +26,9 @@ const router = new Router({
         },*/
 
         // otherwise redirect to home
-        { path: '*', redirect: '/' }
-    ]
-});
+//        { path: '*', redirect: '/' }
+//    ]
+//});
 
 /*router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {
@@ -41,4 +46,4 @@ const router = new Router({
     }
 });*/
 
-export default router;
+export default routes;

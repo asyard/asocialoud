@@ -15,7 +15,10 @@ const instance = axios.create({
 
 export default {
     // (C)reate
-    createNew: (loginNameText, realNameText) => instance.post('user', {loginName: loginNameText, realName: realNameText}),
+    createNew: (loginNameText, realNameText) => instance.post('/', {loginName: loginNameText, realName: realNameText}),
+
+    login: (loginNameText, realNameText) => instance.post('/login', {loginName: loginNameText, realName: realNameText}),
+
     // (R)ead
     getAll: () => instance.get('users', {
         transformResponse: [function (data) {
