@@ -2,6 +2,9 @@ import Vue from 'vue'
 import App from './App.vue'
 import VueRouter from 'vue-router'
 import routes from './router'
+import BootstrapVue from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.config.productionTip = false
 
@@ -17,6 +20,7 @@ const options = {
     showConsoleColors: true
 };
 
+Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 Vue.use(VueLogger, options);
 
