@@ -3,14 +3,19 @@
 
         <h2>Hello, this is your member area</h2>
 
-        here are all members :
 
-        <button @click="listMembers()">CALL Spring Boot REST backend service</button>
-
+        <button @click="listMembers()">List Members</button>
 
 
+        <div v-if="hasData">
+            here are all members :
 
-        <h4>Backend response is : {{ memberList }}</h4>
+            <ol>
+                <li v-for="user in users" :key="user.id">{{user.loginName}} {{user.realName}} <p/> </li>
+            </ol>
+
+        </div>
+
 
 
 
@@ -22,27 +27,30 @@
 
     export default {
         name: "MemberArea",
-        data () {
+        data() {
             return {
+                hasData : false,
                 memberList: '',
                 errors: [],
-                user: {
-                    userName: '',
+                users: {
+                    loginName: '',
                     realName: '',
                     id: -1
                 },
             }
         },
         methods: {
-            listMembers () {
+            listMembers() {
                 userapi.getAll().then(response => {
                     // JSON responses are automatically parsed.
-                    this.memberList = response.data.data;
+                    this.users = response.data.data;
+                    this.hasData = true;
                 })
                     .catch(e => {
+                        this.hasData = false;
                         this.loginError = true;
                         this.errors.push(e);
-                        this.memberList = e;
+                        this.users = e;
                     })
             }
         }
@@ -50,5 +58,8 @@
 </script>
 
 <style scoped>
+li {
+    display: list-item;
 
+}
 </style>
