@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.yardimci.asocialoud.members.controller.exception.MemberAlreadyExistsException;
 import org.yardimci.asocialoud.members.controller.exception.MemberIdMismatchException;
+import org.yardimci.asocialoud.members.controller.exception.MemberInfoMissingException;
 import org.yardimci.asocialoud.members.controller.exception.MemberNotFoundException;
 import org.yardimci.asocialoud.members.db.model.Member;
 import org.yardimci.asocialoud.members.db.repository.MemberRepository;
@@ -47,11 +49,42 @@ public class MemberController {
         return member.get();
     }
 
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public Member login(@RequestBody Member member) {
+        logger.info("Retrieving member");
+        Member byLoginName = memberRepository.findByLoginName(member.getLoginName());
+        if (byLoginName == null) {
+            logger.debug("Member not found by given login name");
+            throw new MemberNotFoundException();
+        }
+
+        if (!byLoginName.getRealName().equals(member.getRealName())) {
+            logger.debug("Member info is invalid");
+            throw new MemberIdMismatchException("Member info is invalid");
+        }
+        return byLoginName;
+    }
+
+
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Member create(@RequestBody Member book) {
-        logger.info("Saving member");
-        return memberRepository.save(book);
+    public Member create(@RequestBody Member member) {
+        logger.info("Save member request received");
+        if (member.getRealName() == null || member.getRealName().isEmpty() || member.getLoginName() == null || member.getLoginName().isEmpty()) {
+            logger.warn("Missing member info");
+            throw new MemberInfoMissingException();
+        }
+
+
+        Member byLoginName = memberRepository.findByLoginName(member.getLoginName());
+        if (byLoginName != null) {
+            logger.warn("Member alreaady exists");
+            throw new MemberAlreadyExistsException();
+        }
+
+        return memberRepository.save(member);
     }
 
     @DeleteMapping("/{id}")
