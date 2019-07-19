@@ -28,7 +28,7 @@ export default new Vuex.Store({
                 //console.log("Accessing backend with user: '" + username);
                 userapi.login(username, password)
                     .then(response => {
-                        console.log("Response : '" + response.data + "' with Status code : " + response.status);
+                        //alert("Response : '" + response.data + "' with Status code : " + response.status);
                         if(response.status == 200) {
                             //console.log("Login successful");
                             // place the loginSuccess state into our vuex store
@@ -40,7 +40,7 @@ export default new Vuex.Store({
                         resolve(response)
                     })
                     .catch(error => {
-                        console.log("Error: " + error);
+                        //alert(error);
                         // place the loginError state into our vuex store
                         commit('login_error', {
                             userName: username
