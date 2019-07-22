@@ -7,9 +7,11 @@ import Welcome from './components/Welcome'
 //import App from './App'
 import MemberArea from './components/MemberArea'
 
+import store from './store'
+
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
     mode: "history",
     routes: [
         { path: '/', component: Welcome},
@@ -27,11 +29,11 @@ export default new Router({
 });
 
 
-/*routes.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {
         // this route requires auth, check if logged in
         // if not, redirect to login page.
-        if (!this.$store.getters.isLoggedIn) {
+        if (!store.getters.isLoggedIn) {
             next({
                 path: '/login'
             })
@@ -42,4 +44,6 @@ export default new Router({
         next(); // make sure to always call next()!
     }
 });
-*/
+
+
+export default router;
