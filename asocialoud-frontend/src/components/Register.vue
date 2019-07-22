@@ -2,9 +2,7 @@
     <div class="user">
         <h1>Create User</h1>
 
-        <h3>Just some database interaction...</h3>
-
-        <input type="text" v-model="user.userName" placeholder="user name">
+        <input type="text" v-model="user.userName" placeholder="user name" autofocus>
         <input type="text" v-model="user.realName" placeholder="real name">
 
         <button @click="createNewUser()">Create User</button>

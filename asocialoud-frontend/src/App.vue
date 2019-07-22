@@ -1,19 +1,26 @@
 <template>
     <div id="app">
-        <img alt="App logo" src="./assets/logo.png">
+        <img alt="App logo" src="./assets/logo.png" @click="home()">
 
         <p>
             Welcome to the new social platform!
         </p>
 
-        Sign up from <router-link to="/register">here</router-link>. <br/>
-        Already a member? <router-link to="/login">Sign in</router-link>
+        <div v-if="isUserLoggedIn">
+            Hello {{loggedInUserName}}, you can access your feed from <router-link to="/feed">here</router-link>
+            <router-view/>
+        </div>
+
+        <div v-else>
+            Sign up from <router-link to="/register">here</router-link>. <br/>
+            Already a member? <router-link to="/login">Sign in</router-link>
+            <br/>
+            <router-view/>
+
+        </div>
+
         <br/>
-
-        <router-view/>
-
-
-        <h3>Follow us</h3>
+        <h4>Follow us</h4>
         <ul>
             <li><a href="https://twitter.com" target="_blank" rel="noopener">twitter</a></li>
             <li><a href="https://instagram.com" target="_blank" rel="noopener">instagram</a></li>
@@ -24,9 +31,19 @@
 </template>
 
 <script>
-
     export default {
-        name: 'app'
+        name: 'app',
+        data() {
+            return {
+                isUserLoggedIn : this.$store.getters.isLoggedIn,
+                loggedInUserName: this.$store.getters.getUserName,
+            }
+        },
+        methods: {
+            home() {
+                this.$router.push('/');
+            }
+        }
     }
 </script>
 

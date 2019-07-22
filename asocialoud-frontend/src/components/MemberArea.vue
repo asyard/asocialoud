@@ -4,6 +4,11 @@
         <h2>Hello {{loggedInUserName}}, this is your member area</h2>
 
 
+
+
+        <button @click="logout()">Logout</button>
+
+
         <button @click="listMembers()">List Members</button>
 
 
@@ -68,6 +73,15 @@
                         this.loginError = true;
                         this.errors.push(e);
                         this.users = e;
+                    })
+            },
+            logout() {
+                this.$store.dispatch("logout", {})
+                    .then(() => {
+                        this.$router.push('/');
+                    })
+                    .catch(e => {
+                        this.errors.push(e);
                     })
             }
         }

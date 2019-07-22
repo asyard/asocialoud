@@ -2,12 +2,8 @@
     <div class="user">
         <h1>Login</h1>
 
-        <h3>Just some database interaction...</h3>
-
-
-
         <form @submit.prevent="login()">
-            <input type="text" placeholder="username" v-model="user.userName">
+            <input type="text" placeholder="username" v-model="user.userName" autofocus>
             <input type="password" placeholder="password" v-model="user.realName">
             <b-btn variant="success" type="submit">Login</b-btn>
             <p v-if="loginError" class="error">Bad login information</p>
