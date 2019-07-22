@@ -1,27 +1,24 @@
 <template>
-    <div id="app">
-        <img alt="App logo" src="./assets/logo.png" @click="home()">
+    <div id="welcome">
+        <div v-if="isUserLoggedIn">
+            Hello {{loggedInUserName}}, you can access your feed from <router-link to="/feed">here</router-link>
+            <router-view/>
+        </div>
 
-        <p>
-            Welcome to the new social platform!
-        </p>
+        <div v-else>
+            Sign up from <router-link to="/register">here</router-link>. <br/>
+            Already a member? <router-link to="/login">Sign in</router-link>
+            <br/>
+            <router-view/>
 
-        <router-view/>
-
-        <br/>
-        <h4>Follow us</h4>
-        <ul>
-            <li><a href="https://twitter.com" target="_blank" rel="noopener">twitter</a></li>
-            <li><a href="https://instagram.com" target="_blank" rel="noopener">instagram</a></li>
-        </ul>
-
+        </div>
 
     </div>
 </template>
 
 <script>
     export default {
-        name: 'app',
+        name: 'welcome',
         data() {
             return {
                 isUserLoggedIn : this.$store.getters.isLoggedIn,
@@ -39,7 +36,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-    #app {
+    #welcome {
         font-family: 'Trebuchet MS', Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
