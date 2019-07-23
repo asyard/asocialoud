@@ -3,22 +3,18 @@
 
         <h2>Hello {{loggedInUserName}}, this is your member area</h2>
 
+        <b-btn @click="logout()">Logout</b-btn>
 
 
-
-        <button @click="logout()">Logout</button>
-
-
-        <button @click="listMembers()">List Members</button>
+        <b-btn @click="listMembers()">List Members</b-btn>
 
 
         <div v-if="hasData">
-            here are all members :
+            <h5>Here are all members : </h5>
 
-            <ol>
-                <li v-for="user in users" :key="user.id">{{user.loginName}} {{user.realName}} <button @click="deleteSelected(user.id)">delete</button>   </li>
-            </ol>
-
+            <b-list-group>
+                <b-list-group-item v-for="user in users" :key="user.id">{{user.loginName}} {{user.realName}} <b-btn @click="deleteSelected(user.id)">delete</b-btn></b-list-group-item>
+            </b-list-group>
         </div>
 
 
@@ -62,6 +58,7 @@
             },
 
             deleteSelected(id) {
+                // eslint-disable-next-line
                 userapi.removeForId(id).then(response => {
                     // JSON responses are automatically parsed.
                     this.listMembers();

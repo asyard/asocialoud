@@ -1,14 +1,15 @@
 <template>
-    <div class="user">
+    <div class="register">
         <h1>Register</h1>
 
-        <input type="text" v-model="user.realName" placeholder="real name" autofocus> <br/>
-        <input type="text" v-model="user.userName" placeholder="user name"><br/>
-        <input type="text" placeholder="email" v-model="user.userEmail"><br/>
-        <input type="password" placeholder="password" v-model="user.userPass"><br/>
+        <form @submit.prevent="createNewUser()">
+            <input type="text" v-model="user.realName" placeholder="real name" autofocus> <br/>
+            <input type="text" v-model="user.userName" placeholder="user name"><br/>
+            <input type="text" placeholder="email" v-model="user.userEmail"><br/>
+            <input type="password" placeholder="password" v-model="user.userPass"><br/>
 
-
-        <button @click="createNewUser()">Create User</button>
+            <b-btn variant="success" type="submit">Create User</b-btn>
+        </form>
 
         <div v-if="showResponse">
             User created. Please <router-link to="/login">Sign in</router-link>
@@ -46,7 +47,7 @@
             createNewUser () {
                 this.errorTxt = '';
                 userapi.createNew(this.user.userName, this.user.realName, this.user.userEmail, this.user.userPass).then(response => {
-                    if (response.status == 201) {
+                    if (response.data.status == 201) {
                         // JSON responses are automatically parsed.
                         this.showResponse = true;
                         this.hasError = false;
