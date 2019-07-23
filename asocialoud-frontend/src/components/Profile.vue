@@ -3,6 +3,8 @@
 
         <h2>Your profile</h2>
 
+        <b-btn @click="logout()">Logout</b-btn>
+
         <b-btn @click="retrieveUser()">Update Profile</b-btn>
 
         <div v-if="updateDivEnabled">
@@ -80,6 +82,15 @@
                         this.updateDivEnabled = true;
                         this.hasError = true;
                         this.message = e;
+                    })
+            },
+            logout() {
+                this.$store.dispatch("logout", {})
+                    .then(() => {
+                        this.$router.push('/');
+                    })
+                    .catch(e => {
+                        this.errors.push(e);
                     })
             }
         }
