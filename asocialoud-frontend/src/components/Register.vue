@@ -10,9 +10,13 @@
 
         <button @click="createNewUser()">Create User</button>
 
-        <div v-if="showResponse"><h6>User created with Id: {{ user.id }}</h6></div>
+        <div v-if="showResponse">
+            User created. Please <router-link to="/login">Sign in</router-link>
+            <br/>
+            <router-view/>
+        </div>
 
-        <div v-else-if="hasError"><h6>{{ errors }}</h6></div>
+        <div v-else-if="hasError"><h6>{{ errorTxt }}</h6></div>
     </div>
 </template>
 
@@ -25,7 +29,7 @@
             return {
                 response: [],
                 hasError: false,
-                errors: [],
+                errorTxt: '',
                 user: {
                     userName: '',
                     realName: '',
@@ -40,18 +44,25 @@
         },
         methods: {
             createNewUser () {
-                this.errors = [];
+                this.errorTxt = '';
                 userapi.createNew(this.user.userName, this.user.realName, this.user.userEmail, this.user.userPass).then(response => {
-                    // JSON responses are automatically parsed.
-                    this.showResponse = true;
-                    this.hasError = false;
-                    this.response = response.data;
-                    this.user.id = response.data;
+                    if (response.status == 201) {
+                        // JSON responses are automatically parsed.
+                        this.showResponse = true;
+                        this.hasError = false;
+                        this.response = response.data;
+                        this.user.id = response.data;
+                    } else {
+                        this.showResponse = false;
+                        this.hasError = true;
+                        this.errorTxt = response.data.data;
+                    }
+
                 })
                     .catch(e => {
                         this.showResponse = false;
                         this.hasError = true;
-                        this.errors.push(e);
+                        this.errorTxt = e;
                     })
             }
         }

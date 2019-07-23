@@ -88,27 +88,45 @@ public class MemberController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Member create(@RequestBody Member member) {
+    public MemberResponse create(@RequestBody Member member) {
         logger.info("Save member request received");
-        if (member.getRealName() == null || member.getRealName().isEmpty() || member.getLoginName() == null || member.getLoginName().isEmpty()) {
+        MemberResponse memberResponse = new MemberResponse();
+
+        if (member.getRealName() == null || member.getRealName().isEmpty() || member.getLoginName() == null || member.getLoginName().isEmpty() || member.getPassword()==null || member.getPassword().isEmpty()) {
             logger.warn("Missing member info");
-            throw new MemberInfoMissingException();
+            memberResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
+            memberResponse.setData("error.missinginformation");
+            return memberResponse;
         }
 
 
         Member byLoginName = memberRepository.findByLoginName(member.getLoginName());
         if (byLoginName != null) {
-            logger.warn("Member already exists");
-            throw new MemberAlreadyExistsException("error.usernameistaken");
-        }
+            logger.warn("Member name already exists");
+            memberResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
+            memberResponse.setData("error.membernameexists");
+            return memberResponse;        }
 
         Member byEmail = memberRepository.findByEmail(member.getEmail());
         if (byEmail != null) {
             logger.warn("Member email already exists");
-            throw new MemberAlreadyExistsException("error.emailistaken");
+            memberResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
+            memberResponse.setData("error.emailistaken");
+            return memberResponse;
         }
 
-        return memberRepository.save(member);
+        try {
+            logger.info("Saving member : " + member.getLoginName());
+            memberRepository.save(member);
+            memberResponse.setStatus(HttpStatus.CREATED.toString());
+            memberResponse.setData(member);
+        } catch (Exception e) {
+            logger.error("Unable to save member", e);
+            memberResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
+            memberResponse.setData("error.servererror");
+        }
+
+        return memberResponse;
     }
 
     @DeleteMapping("/{id}")
