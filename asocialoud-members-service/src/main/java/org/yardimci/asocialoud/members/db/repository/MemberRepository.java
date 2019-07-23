@@ -10,4 +10,6 @@ public interface MemberRepository extends CrudRepository<Member, Long> {
 
     Member findByLoginName(String loginName);
 
+    Member findByEmail(String email);
+
 }
