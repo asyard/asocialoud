@@ -26,12 +26,12 @@ export default {
         }]
     }),
     // (U)pdate
-    updateForId: (id, loginNameText, realNameText) => instance.put('/'+id, {loginName: loginNameText, realName: realNameText}),
+    updateByUserName: (userName, realNameText, emailTxt) => instance.put('/'+userName, {realName: realNameText, email: emailTxt}),
+
     // (D)elete
     removeForId: (id) => instance.delete('/'+id),
 
-    hello() {
-        return instance.get('/id/1')
-    }
+    retrieveByUserName: (userName) => instance.get('/'+userName),
+
 }
 

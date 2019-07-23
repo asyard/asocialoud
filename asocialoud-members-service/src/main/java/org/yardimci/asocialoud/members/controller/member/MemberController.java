@@ -45,10 +45,14 @@ public class MemberController {
         return memberResponse;
     }
 
-    @GetMapping("/{memberName}")
-    public Member findByUserName(@PathVariable String memberName) {
-        logger.info("Retrieving member by login name : "+ memberName);
-        return memberRepository.findByLoginName(memberName);
+    @GetMapping("/{userName}")
+    public MemberResponse findByUserName(@PathVariable("userName") String userNameToQuery) {
+        logger.info("Retrieving member by login name : "+ userNameToQuery);
+        Member byLoginName = memberRepository.findByLoginName(userNameToQuery);
+        MemberResponse memberResponse = new MemberResponse();
+        memberResponse.setData(byLoginName);
+        memberResponse.setStatus(byLoginName == null ? HttpStatus.NOT_FOUND.toString() : HttpStatus.OK.toString());
+        return memberResponse;
     }
 
     @GetMapping("/id/{id}")
@@ -136,13 +140,34 @@ public class MemberController {
         memberRepository.deleteById(id);
     }
 
-    @PutMapping("/{id}")
-    public Member updateMember(@RequestBody Member member, @PathVariable Long id) {
-        if (member.getId().longValue() != id.longValue()) {
-            throw new MemberIdMismatchException("mismatch : " + id);
+    @PutMapping("/{userName}")
+    public MemberResponse updateMember(@RequestBody Member member, @PathVariable String userName) {
+        logger.info("Updating user : " + userName);
+        MemberResponse memberResponse = new MemberResponse();
+
+        if (userName == null /*|| !member.getLoginName().equals(userName)*/ ||
+                member == null || member.getRealName() == null || member.getRealName().isEmpty() || member.getEmail() == null || member.getEmail().isEmpty()) {
+            //throw new MemberIdMismatchException("mismatch : " + userName);
+            memberResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
+            memberResponse.setData("error.missinginformation");
+            return memberResponse;
         }
-        memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
-        return memberRepository.save(member);
+        Member savedMember = null;
+        try {
+            Member userInDb = memberRepository.findByLoginName(userName);
+            userInDb.setRealName(member.getRealName());
+            userInDb.setEmail(member.getEmail());
+
+            savedMember = memberRepository.save(userInDb);
+            memberResponse.setData(savedMember);
+            memberResponse.setStatus(HttpStatus.OK.toString());
+        } catch (Exception e) {
+            logger.error("Unable to update user : " + userName, e);
+            memberResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+        }
+
+
+        return memberResponse;
     }
 
 }

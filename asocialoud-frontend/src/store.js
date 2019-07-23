@@ -40,6 +40,11 @@ export default new Vuex.Store({
             state.loginError = false;
             state.userName = payload.userName;
             state.realName = null;
+        },
+        login_refresh(state, payload){
+            state.loginSuccess = true;
+            state.loginError = false;
+            state.realName = payload.realName;
         }
     },
     actions: {
@@ -64,7 +69,7 @@ export default new Vuex.Store({
                         commit('login_error', {
                             userName: username
                         });
-                        reject("Invalid credentials!")
+                        reject("Invalid credentials!" + error)
                     })
             })
         },
@@ -72,7 +77,13 @@ export default new Vuex.Store({
             commit('login_terminate', {
                 //userName: username
             });
-        }
+        },
+        refreshValues({commit}, {realname, email}) {
+            commit('login_refresh', {
+                realName: realname,
+                email: email
+            });
+        },
 
     },
     getters: {

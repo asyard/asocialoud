@@ -6,6 +6,10 @@
             Welcome to the new social platform!
         </p>
 
+        <ul>
+            <li><router-link to="/feed">My feed</router-link></li>
+            <li><router-link to="/profile">My profile</router-link></li>
+        </ul>
         <router-view/>
 
         <br/>

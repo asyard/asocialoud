@@ -6,6 +6,7 @@ import Login from './components/Login'
 import Welcome from './components/Welcome'
 //import App from './App'
 import MemberArea from './components/MemberArea'
+import Profile from './components/Profile'
 
 import store from './store'
 
@@ -18,6 +19,11 @@ const router = new Router({
         { path: '/register', component: Register},
         { path: '/login', component: Login },
         { path: '/feed', component: MemberArea,
+            meta: {
+                requiresAuth: true
+            }
+        },
+        { path: '/profile', component: Profile,
             meta: {
                 requiresAuth: true
             }
