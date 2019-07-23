@@ -20,7 +20,7 @@ export default new Vuex.Store({
         loginSuccess: false,
         loginError: false,
         userName: null,
-        userPass: null
+        realName: null
     },
     //plugins: [vuexLocalStorage.plugin],
     plugins: [createPersistedState()],
@@ -28,17 +28,18 @@ export default new Vuex.Store({
         login_success(state, payload){
             state.loginSuccess = true;
             state.userName = payload.userName;
-            state.userPass = payload.userPass;
+            state.realName = payload.realName;
         },
         login_error(state, payload){
             state.loginError = true;
             state.userName = payload.userName;
+            state.realName = null;
         },
         login_terminate(state, payload){
             state.loginSuccess = false;
             state.loginError = false;
             state.userName = payload.userName;
-            state.userPass = null;
+            state.realName = null;
         }
     },
     actions: {
@@ -53,13 +54,12 @@ export default new Vuex.Store({
                             // place the loginSuccess state into our vuex store
                             commit('login_success', {
                                 userName: username,
-                                userPass: password
+                                realName: response.data.data.realName
                             });
                         }
                         resolve(response)
                     })
                     .catch(error => {
-                        alert(error);
                         // place the loginError state into our vuex store
                         commit('login_error', {
                             userName: username
@@ -79,6 +79,6 @@ export default new Vuex.Store({
         isLoggedIn: state => state.loginSuccess,
         hasLoginErrored: state => state.loginError,
         getUserName: state => state.userName,
-        getUserPass: state => state.userPass
+        getRealName: state => state.realName,
     }
 })

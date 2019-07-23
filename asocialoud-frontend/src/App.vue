@@ -22,12 +22,6 @@
 <script>
     export default {
         name: 'app',
-        data() {
-            return {
-                isUserLoggedIn : this.$store.getters.isLoggedIn,
-                loggedInUserName: this.$store.getters.getUserName,
-            }
-        },
         methods: {
             home() {
                 this.$router.push('/');

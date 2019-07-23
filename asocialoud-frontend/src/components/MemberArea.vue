@@ -36,7 +36,7 @@
         data() {
             return {
                 hasData : false,
-                loggedInUserName: store.getters.getUserName,
+                loggedInUserName: store.getters.getRealName,
                 memberList: '',
                 errors: [],
                 users: {
@@ -64,9 +64,7 @@
             deleteSelected(id) {
                 userapi.removeForId(id).then(response => {
                     // JSON responses are automatically parsed.
-                    //this.users.
-                    response.data;
-                    this.hasData = true;
+                    this.listMembers();
                 })
                     .catch(e => {
                         this.hasData = false;

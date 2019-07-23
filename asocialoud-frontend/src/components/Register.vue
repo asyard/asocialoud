@@ -1,15 +1,18 @@
 <template>
     <div class="user">
-        <h1>Create User</h1>
+        <h1>Register</h1>
 
-        <input type="text" v-model="user.userName" placeholder="user name" autofocus>
-        <input type="text" v-model="user.realName" placeholder="real name">
+        <input type="text" v-model="user.realName" placeholder="real name" autofocus> <br/>
+        <input type="text" v-model="user.userName" placeholder="user name"><br/>
+        <input type="text" placeholder="email" v-model="user.userEmail"><br/>
+        <input type="password" placeholder="password" v-model="user.userPass"><br/>
+
 
         <button @click="createNewUser()">Create User</button>
 
         <div v-if="showResponse"><h6>User created with Id: {{ user.id }}</h6></div>
 
-        <div v-if="hasError"><h6>{{ errors }}</h6></div>
+        <div v-else-if="hasError"><h6>{{ errors }}</h6></div>
     </div>
 </template>
 
@@ -26,6 +29,8 @@
                 user: {
                     userName: '',
                     realName: '',
+                    userEmail: '',
+                    userPass: '',
                     id: -1
                 },
                 showResponse: false,
@@ -35,7 +40,8 @@
         },
         methods: {
             createNewUser () {
-                userapi.createNew(this.user.userName, this.user.realName).then(response => {
+                this.errors = [];
+                userapi.createNew(this.user.userName, this.user.realName, this.user.userEmail, this.user.userPass).then(response => {
                     // JSON responses are automatically parsed.
                     this.showResponse = true;
                     this.hasError = false;
@@ -43,6 +49,7 @@
                     this.user.id = response.data;
                 })
                     .catch(e => {
+                        this.showResponse = false;
                         this.hasError = true;
                         this.errors.push(e);
                     })

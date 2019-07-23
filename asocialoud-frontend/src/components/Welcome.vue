@@ -22,7 +22,7 @@
         data() {
             return {
                 isUserLoggedIn : this.$store.getters.isLoggedIn,
-                loggedInUserName: this.$store.getters.getUserName,
+                loggedInUserName: this.$store.getters.getRealName,
             }
         },
         methods: {

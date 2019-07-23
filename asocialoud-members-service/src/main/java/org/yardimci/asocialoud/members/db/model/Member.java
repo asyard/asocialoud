@@ -1,6 +1,9 @@
 package org.yardimci.asocialoud.members.db.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 
 @Entity
@@ -17,6 +20,13 @@ public class Member {
 
     @Column(name = "realname", nullable = false)
     private String realName;
+
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    //@JsonProperty(access = Access.WRITE_ONLY)
+    @Column(name = "password", nullable = false)
+    private String password;
 
     public Long getId() {
         return id;
@@ -40,6 +50,24 @@ public class Member {
 
     public void setRealName(String realName) {
         this.realName = realName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @JsonIgnore
+    public String getPassword() {
+        return password;
+    }
+
+    @JsonProperty
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override

@@ -15,9 +15,9 @@ const instance = axios.create({
 
 export default {
     // (C)reate
-    createNew: (loginNameText, realNameText) => instance.post('/', {loginName: loginNameText, realName: realNameText}),
+    createNew: (loginNameText, realNameText, emailText, passwordText) => instance.post('/', {loginName: loginNameText, realName: realNameText, email: emailText, password: passwordText}),
 
-    login: (loginNameText, realNameText) => instance.post('/login', {loginName: loginNameText, realName: realNameText}),
+    login: (loginNameText, passwordText) => instance.post('/login', {loginName: loginNameText, password: passwordText}),
 
     // (R)ead
     getAll: () => instance.get('/', {

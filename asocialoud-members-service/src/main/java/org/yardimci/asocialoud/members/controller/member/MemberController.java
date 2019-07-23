@@ -65,7 +65,7 @@ public class MemberController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public Member login(@RequestBody Member member) {
+    public MemberResponse login(@RequestBody Member member) {
         logger.info("Retrieving member");
         Member byLoginName = memberRepository.findByLoginName(member.getLoginName());
         if (byLoginName == null) {
@@ -73,11 +73,15 @@ public class MemberController {
             throw new MemberNotFoundException();
         }
 
-        if (!byLoginName.getRealName().equals(member.getRealName())) {
-            logger.debug("Member info is invalid");
-            throw new MemberIdMismatchException("Member info is invalid");
+        if (!byLoginName.getPassword().equals(member.getPassword())) {
+            logger.debug("Member password is invalid");
+            throw new MemberIdMismatchException("Member credentials are invalid");
         }
-        return byLoginName;
+        MemberResponse memberResponse = new MemberResponse();
+        memberResponse.setStatus(HttpStatus.OK.toString());
+        memberResponse.setData(byLoginName);
+
+        return memberResponse;
     }
 
 
@@ -98,11 +102,18 @@ public class MemberController {
             throw new MemberAlreadyExistsException("error.usernameistaken");
         }
 
+        Member byEmail = memberRepository.findByEmail(member.getEmail());
+        if (byEmail != null) {
+            logger.warn("Member email already exists");
+            throw new MemberAlreadyExistsException("error.emailistaken");
+        }
+
         return memberRepository.save(member);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
+        logger.info("Deleting user with id : " + id);
         memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
         memberRepository.deleteById(id);
     }
