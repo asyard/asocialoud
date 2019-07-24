@@ -67,6 +67,18 @@ public class MemberController {
         return member.get();
     }
 
+
+    @GetMapping("/search/{userName}")
+    public MemberResponse findAllByUserName(@PathVariable("userName") String userNameToQuery) {
+        logger.info("Retrieving members by login name : "+ userNameToQuery);
+        List<Member> byLoginName = memberRepository.findByLoginNameIgnoreCaseContaining(userNameToQuery);
+        MemberResponse memberResponse = new MemberResponse();
+        memberResponse.setData(byLoginName);
+        memberResponse.setStatus(byLoginName == null ? HttpStatus.NOT_FOUND.toString() : HttpStatus.OK.toString());
+        return memberResponse;
+    }
+
+
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public MemberResponse login(@RequestBody Member member) {
