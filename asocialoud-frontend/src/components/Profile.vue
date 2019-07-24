@@ -1,32 +1,48 @@
 <template>
     <div class="profile">
 
-        <h2>Your profile</h2>
+        <div v-if="$route.params.username == $store.getters.getUserName">
 
-        <b-btn @click="logout()">Logout</b-btn>
+            <h2>Your profile</h2>
 
-        <b-btn @click="retrieveUser()">Update Profile</b-btn>
+            <b-btn @click="logout()">Logout</b-btn>
 
-        <div v-if="updateDivEnabled">
-            <h3>Update Profile</h3>
-            <form @submit.prevent="updateUser()">
-                <input type="text" v-model="user.realName" placeholder="real name" autofocus> <br/>
-                <input type="text" placeholder="email" v-model="user.email"><br/>
-                <b-btn variant="success" type="submit">Update</b-btn>
-                <b-btn @click="updateDivEnabled = false">Cancel</b-btn>
-            </form>
+            <b-btn @click="retrieveUser()">Update Profile</b-btn>
+
+            <div v-if="updateDivEnabled">
+                <h3>Update Profile</h3>
+                <form @submit.prevent="updateUser()">
+                    <input type="text" v-model="user.realName" placeholder="real name" autofocus> <br/>
+                    <input type="text" placeholder="email" v-model="user.email"><br/>
+                    <b-btn variant="success" type="submit">Update</b-btn>
+                    <b-btn @click="updateDivEnabled = false">Cancel</b-btn>
+                </form>
+            </div>
+
+            <div v-if="hasError">
+                Opps, something went wrong. {{message}}
+            </div>
+
+            <div v-else>
+                {{message}}
+            </div>
+
         </div>
 
-        <div v-if="hasError">
-            Opps, something went wrong. {{message}}
+        <div v-else-if="user.exists">
+            Profile of : {{$route.params.username}}<br/>
+            Real Name : {{user.realName}}
         </div>
 
         <div v-else>
-            {{message}}
+            Sorry, user not found.
+
         </div>
 
 
     </div>
+
+
 </template>
 
 <script>
@@ -39,14 +55,25 @@
         data() {
             return {
                 updateDivEnabled: false,
-                hasError : false,
-                message : '',
+                hasError: false,
+                message: '',
                 user: {
                     realName: '', //store.getters.getRealName,
                     userName: '', //store.getters.getUserName,
-                    email: ''
+                    email: '',
+                    exists: false
                 }
             }
+        },
+        created() {
+            userapi.retrieveByUserName(this.$route.params.username).then(response => {
+                this.user.exists = true;
+                this.user.realName = response.data.data.realName;
+            })
+            // eslint-disable-next-line
+                .catch(e => {
+                    this.user.exists = false;
+                })
         },
         methods: {
             retrieveUser() {
@@ -57,26 +84,25 @@
                     this.user.realName = response.data.data.realName;
                     this.user.email = response.data.data.email;
                 })
+                // eslint-disable-next-line
                     .catch(e => {
                         this.updateDivEnabled = false;
                         this.hasError = true;
                     })
             },
             updateUser() {
+                // eslint-disable-next-line
                 userapi.updateByUserName(store.getters.getUserName, this.user.realName, this.user.email).then(response => {
                     this.hasError = false;
                     this.message = "success";
                     this.updateDivEnabled = false;
                     this.$store.dispatch("refreshValues", {realname: this.user.realName, email: this.user.email})
                         .then(() => {
-                            this.$router.push('/profile');
+                            this.$router.push('/profile/' + store.getters.getUserName);
                         })
                         .catch(e => {
                             this.errors.push(e);
                         })
-
-
-
                 })
                     .catch(e => {
                         this.updateDivEnabled = true;

@@ -1,15 +1,21 @@
 <template>
     <div id="app">
-        <img alt="App logo" src="./assets/logo.png" @click="home()">
 
-        <p>
-            Welcome to the new social platform!
-        </p>
+        <div  v-if="$store.getters.getUserName == null">
+            <img alt="App logo" src="./assets/logo.png" @click="home()">
 
-        <ul>
-            <li><router-link to="/feed">My feed</router-link></li>
-            <li><router-link to="/profile">My profile</router-link></li>
-        </ul>
+            <p>
+                Welcome to the new social platform!
+            </p>
+        </div>
+
+        <div v-else>
+            <h3>Welcome again!</h3>
+            <ul>
+                <li><router-link to="/feed">My feed</router-link></li>
+                <li><router-link :to="{ path: '/profile/'+$store.getters.getUserName}">My profile</router-link></li>
+            </ul>
+        </div>
         <router-view/>
 
         <br/>
@@ -18,7 +24,6 @@
             <li><a href="https://twitter.com" target="_blank" rel="noopener">twitter</a></li>
             <li><a href="https://instagram.com" target="_blank" rel="noopener">instagram</a></li>
         </ul>
-
 
     </div>
 </template>
