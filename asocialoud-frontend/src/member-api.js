@@ -33,5 +33,11 @@ export default {
 
     retrieveByUserName: (userName) => instance.get('/'+userName),
 
+    getFiltered: (userName) => instance.get('/search/'+userName, {
+        transformResponse: [function (data) {
+            return data? JSON.parse(data) : data;
+        }]
+    })
+
 }
 
