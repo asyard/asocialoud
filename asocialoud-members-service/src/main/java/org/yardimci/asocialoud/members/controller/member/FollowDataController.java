@@ -120,12 +120,11 @@ public class FollowDataController {
 
         if (followDataToRemove != null) {
             owner.getFollowDataList().remove(followDataToRemove);
-            followDataToRemove = null;
             try {
                 logger.info("Saving member : " + ownerMember);
                 memberRepository.save(owner);
                 memberResponse.setStatus(HttpStatus.OK.toString());
-                memberResponse.setData("info.success");
+                memberResponse.setData(owner.getFollowDataList());
             } catch (Exception e) {
                 logger.error("Unable to save member", e);
                 memberResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
