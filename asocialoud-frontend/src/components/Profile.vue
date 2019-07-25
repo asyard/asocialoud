@@ -93,6 +93,7 @@
             retrieveUser() {
                 this.hasError = false;
                 this.updateDivEnabled = false;
+                this.followingDivEnabled = false;
                 userapi.retrieveByUserName(store.getters.getUserName).then(response => {
                     this.updateDivEnabled = true;
                     this.user.realName = response.data.data.realName;
@@ -105,7 +106,6 @@
                     })
             },
             updateUser() {
-                this.followingDivEnabled = false;
                 // eslint-disable-next-line
                 userapi.updateByUserName(store.getters.getUserName, this.user.realName, this.user.email).then(response => {
                     this.hasError = false;
