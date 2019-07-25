@@ -7,7 +7,18 @@
 
             <b-btn @click="logout()">Logout</b-btn>
 
+            <b-btn @click="listFollowing()">List Following</b-btn>
+
             <b-btn @click="retrieveUser()">Update Profile</b-btn>
+
+            <div v-if="followingDivEnabled">
+                <h3>Following</h3>
+                <b-list-group>
+                    <b-list-group-item v-for="fd in user.following" :key="fd.id">{{fd.memberToFollow.loginName}}<b-btn @click="unfollowSelected(fd.memberToFollow.loginName)">unfollow</b-btn></b-list-group-item>
+                </b-list-group>
+            </div>
+
+
 
             <div v-if="updateDivEnabled">
                 <h3>Update Profile</h3>
@@ -47,6 +58,7 @@
 
 <script>
     import userapi from '../member-api';
+    import followapi from '../follow-api';
     import store from '../store';
 
 
@@ -55,13 +67,15 @@
         data() {
             return {
                 updateDivEnabled: false,
+                followingDivEnabled: false,
                 hasError: false,
                 message: '',
                 user: {
                     realName: '', //store.getters.getRealName,
                     userName: '', //store.getters.getUserName,
                     email: '',
-                    exists: false
+                    exists: false,
+                    following: []
                 }
             }
         },
@@ -91,6 +105,7 @@
                     })
             },
             updateUser() {
+                this.followingDivEnabled = false;
                 // eslint-disable-next-line
                 userapi.updateByUserName(store.getters.getUserName, this.user.realName, this.user.email).then(response => {
                     this.hasError = false;
@@ -110,6 +125,31 @@
                         this.message = e;
                     })
             },
+
+            listFollowing() {
+                this.hasError = false;
+                this.updateDivEnabled = false;
+                this.followingDivEnabled = true;
+                this.user.following = [];
+                followapi.getFollowing(store.getters.getUserName).then(response => {
+                    this.user.following = response.data.data;
+                })
+                // eslint-disable-next-line
+                    .catch(e => {
+                        this.hasError = true;
+                    })
+            },
+
+            unfollowSelected(userToRemove) {
+                followapi.removeFollowing(store.getters.getUserName, userToRemove).then(response => {
+                    this.user.following = response.data.data;
+                })
+                // eslint-disable-next-line
+                    .catch(e => {
+                        this.hasError = true;
+                    })
+            },
+
             logout() {
                 this.$store.dispatch("logout", {})
                     .then(() => {
