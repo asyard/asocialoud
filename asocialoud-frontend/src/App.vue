@@ -1,7 +1,7 @@
 <template>
     <div id="app">
 
-        <div  v-if="$store.getters.getUserName == null">
+        <div v-if="$store.getters.isLoggedIn == false">
             <img alt="App logo" src="./assets/logo.png" @click="home()">
 
             <p>
@@ -10,17 +10,28 @@
         </div>
 
         <div v-else>
+            <img alt="App logo" src="./assets/asocialoud_mini.png" @click="home()">
             <h3>Welcome again!</h3>
 
-            <input type="text" id="selector" placeholder="search for @member" v-model="membernameforsearch" class="form-control" v-on:keyup="getFilteredMembers"/>
+            <input id="selector" name="selector" placeholder="search for @member" autocomplete="off"
+                   v-model="membernameforsearch" class="form-control" v-on:keyup="getFilteredMembers"/>
             <div v-if="searchComplete">
                 <b-list-group>
-                    <b-list-group-item v-for="user in users" :key="user.id">{{user.loginName}}<b-btn >follow</b-btn></b-list-group-item>
+                    <b-list-group-item v-for="user in users" :key="user.id">{{user.loginName}}
+                        <b-btn @click="followMember(user.loginName)">follow</b-btn>
+                        <b-btn @click="unfollowMember(user.loginName)">unfollow</b-btn>
+                        {{user.alreadyFollowing}}
+                    </b-list-group-item>
                 </b-list-group>
             </div>
+
             <ul>
-                <li><router-link to="/feed">My feed</router-link></li>
-                <li><router-link :to="{ path: '/profile/'+$store.getters.getUserName}">My profile</router-link></li>
+                <li>
+                    <router-link to="/feed">My feed</router-link>
+                </li>
+                <li>
+                    <router-link :to="{ path: '/profile/'+$store.getters.getUserName}">My profile</router-link>
+                </li>
             </ul>
         </div>
         <router-view/>
@@ -37,6 +48,9 @@
 
 <script>
     import userapi from './member-api';
+    import followapi from './follow-api';
+    import store from "./store";
+
 
     export default {
         name: 'app',
@@ -45,12 +59,15 @@
                 membernameforsearch: '',
                 searchComplete: false,
                 users: {
-                    loginName: ''
+                    loginName: '',
+                    //alreadyFollowing : false
                 },
             }
         },
         methods: {
             home() {
+                this.membernameforsearch = '';
+                this.searchComplete = false;
                 this.$router.push('/');
             },
             getFilteredMembers() {
@@ -66,6 +83,12 @@
                         })
                     this.searchComplete = true;
                 }
+            },
+            followMember(memberToFollow) {
+                followapi.addFollowing(store.getters.getUserName, memberToFollow);
+            },
+            unfollowMember(memberToUnFollow) {
+                followapi.removeFollowing(store.getters.getUserName, memberToUnFollow);
             }
         }
     }
