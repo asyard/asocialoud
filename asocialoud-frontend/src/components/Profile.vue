@@ -153,7 +153,8 @@
             logout() {
                 this.$store.dispatch("logout", {})
                     .then(() => {
-                        this.$router.push('/');
+                        window.location.href = "/";
+                        //this.$router.push('/');
                     })
                     .catch(e => {
                         this.errors.push(e);

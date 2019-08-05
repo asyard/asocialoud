@@ -27,10 +27,11 @@
 
             <ul>
                 <li>
-                    <router-link to="/feed">My feed</router-link>
+                    <!--router-link to="/feed">My feed</router-link-->
+                    <a :href="$router.resolve('/feed').href">My Feed</a>
                 </li>
                 <li>
-                    <router-link :to="{ path: '/profile/'+$store.getters.getUserName}">My profile</router-link>
+                    <a :href="$router.resolve('/profile/'+$store.getters.getUserName).href">My Profile</a>
                 </li>
             </ul>
         </div>
