@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_members")
@@ -101,6 +102,11 @@ public class Member {
         }
 
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.getLoginName());
     }
 
     @Override
