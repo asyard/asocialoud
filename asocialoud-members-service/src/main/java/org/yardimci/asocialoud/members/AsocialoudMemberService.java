@@ -29,7 +29,7 @@ public class AsocialoudMemberService {
     private static final Logger logger = LoggerFactory.getLogger(AsocialoudMemberService.class);
 
     public static void main(String[] args) {
-        logger.info("Starting asocialoud members. Horraay!");
+        logger.info("Starting asocialoud members. Hooray!");
         SpringApplication.run(AsocialoudMemberService.class, args);
     }
 

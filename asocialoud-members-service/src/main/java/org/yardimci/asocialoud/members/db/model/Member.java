@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "tbl_members")
@@ -27,6 +28,10 @@ public class Member {
     //@JsonProperty(access = Access.WRITE_ONLY)
     @Column(name = "password", nullable = false)
     private String password;
+
+    @JsonIgnore
+    @OneToMany(/*mappedBy = "memberToFollow",*/ orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<FollowData> followDataList;
 
     public Long getId() {
         return id;
@@ -68,6 +73,34 @@ public class Member {
     @JsonProperty
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<FollowData> getFollowDataList() {
+        return followDataList;
+    }
+
+    public void setFollowDataList(List<FollowData> followDataList) {
+        this.followDataList = followDataList;
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj instanceof Member) {
+            if (((Member) obj).getLoginName().equals(this.getLoginName())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override

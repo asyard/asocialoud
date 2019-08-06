@@ -32,6 +32,7 @@ export default new Vuex.Store({
         },
         login_error(state, payload){
             state.loginError = true;
+            state.loginSuccess = false;
             state.userName = payload.userName;
             state.realName = null;
         },
