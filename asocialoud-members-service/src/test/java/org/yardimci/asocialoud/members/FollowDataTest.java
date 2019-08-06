@@ -32,22 +32,22 @@ public class FollowDataTest {
     @Transactional
     public void when_member_has_followers_thenOK() {
         Member member1 = new Member();
-        member1.setLoginName("m1");
-        member1.setRealName("r1");
-        member1.setEmail("m1");
+        member1.setLoginName("testm1");
+        member1.setRealName("testr1");
+        member1.setEmail("testm1");
         member1.setPassword("123");
 
 
         Member member2 = new Member();
-        member2.setLoginName("m2");
-        member2.setRealName("r2");
-        member2.setEmail("m2");
+        member2.setLoginName("testm2");
+        member2.setRealName("testr2");
+        member2.setEmail("testm2");
         member2.setPassword("123");
 
         Member member3 = new Member();
-        member3.setLoginName("m3");
-        member3.setRealName("r3");
-        member3.setEmail("m3");
+        member3.setLoginName("testm3");
+        member3.setRealName("testr3");
+        member3.setEmail("testm3");
         member3.setPassword("123");
 
         memberRepository.save(member1);
