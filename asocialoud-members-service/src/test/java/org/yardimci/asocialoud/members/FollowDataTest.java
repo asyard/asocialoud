@@ -30,52 +30,76 @@ public class FollowDataTest {
 
     @Test
     @Transactional
-    public void when_member_has_followers_thenOK() {
-        Member member1 = new Member();
-        member1.setLoginName("testm1");
-        member1.setRealName("testr1");
-        member1.setEmail("testm1");
-        member1.setPassword("123");
-
-
-        Member member2 = new Member();
-        member2.setLoginName("testm2");
-        member2.setRealName("testr2");
-        member2.setEmail("testm2");
-        member2.setPassword("123");
-
-        Member member3 = new Member();
-        member3.setLoginName("testm3");
-        member3.setRealName("testr3");
-        member3.setEmail("testm3");
-        member3.setPassword("123");
+    public void when_member_follows_thenOK() {
+        Member member1 = createMember("testm1", "testr1", "testm1", "123");
+        Member member2 = createMember("testm2", "testr2", "testm2", "123");
+        Member member3 = createMember("testm3", "testr3", "testm3", "123");
 
         memberRepository.save(member1);
         memberRepository.save(member2);
         memberRepository.save(member3);
 
-        if (member1.getFollowDataList() == null) {
-            member1.setFollowDataList(new ArrayList<>());
-        }
-
-
-        FollowData followData = new FollowData();
-        followData.setFollowDate(new Date());
-        followData.setOwner(member1);
-        followData.setMemberToFollow(member2);
-
-        FollowData followData2 = new FollowData();
-        followData2.setFollowDate(new Date());
-        followData2.setOwner(member1);
-        followData2.setMemberToFollow(member3);
+        FollowData followData = createFollowData(member1, member2);
+        FollowData followData2 = createFollowData(member1, member3);
 
         member1.getFollowDataList().add(followData);
         member1.getFollowDataList().add(followData2);
         memberRepository.save(member1);
 
-
         List<FollowData> member1FollowsList = followDataRepository.findAllByOwnerMember(member1);
         System.out.println(member1FollowsList.size());
-        Assert.assertTrue(member1FollowsList.get(0).getMemberToFollow().equals(member2));
+        Assert.assertTrue(member1FollowsList.stream().anyMatch(fd -> fd.getOwner().equals(member1)));
     }
+
+
+
+
+    @Test
+    @Transactional
+    public void when_member_has_followers_thenOK() {
+        Member member1 = createMember("testm1", "testr1", "testm1", "123");
+        Member member2 = createMember("testm2", "testr2", "testm2", "123");
+        Member member3 = createMember("testm3", "testr3", "testm3", "123");
+        Member member4 = createMember("testm4", "testr4", "testm4", "123");
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        FollowData followData = createFollowData(member1, member3);
+        FollowData followData2 = createFollowData(member2, member3);
+
+        member1.getFollowDataList().add(followData);
+        member2.getFollowDataList().add(followData2);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+
+        List<FollowData> member3FollowersList = followDataRepository.findAllFollowersOfMember(member3);
+        System.out.println(member3FollowersList.size());
+        Assert.assertTrue(member3FollowersList.stream().anyMatch(fd -> fd.getMemberToFollow().equals(member3)));
+    }
+
+    private Member createMember(String loginName, String realName, String email, String password) {
+        Member member = new Member();
+        member.setLoginName(loginName);
+        member.setRealName(realName);
+        member.setEmail(email);
+        member.setPassword(password);
+        member.setFollowDataList(new ArrayList<>());
+
+        return member;
+    }
+
+    private FollowData createFollowData(Member owner, Member toFollow) {
+        FollowData followData = new FollowData();
+        followData.setFollowDate(new Date());
+        followData.setOwner(owner);
+        followData.setMemberToFollow(toFollow);
+
+        return followData;
+    }
+
+
 }

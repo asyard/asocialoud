@@ -13,4 +13,8 @@ public interface FollowDataRepository extends CrudRepository<FollowData, Long> {
 
     @Query("select fd from  FollowData fd where fd.owner = :ownerMember")
     List<FollowData> findAllByOwnerMember(@Param("ownerMember") Member ownerMember);
+
+    @Query("select fd from  FollowData fd where fd.memberToFollow = :ownerMember")
+    List<FollowData> findAllFollowersOfMember(@Param("ownerMember") Member member);
+
 }

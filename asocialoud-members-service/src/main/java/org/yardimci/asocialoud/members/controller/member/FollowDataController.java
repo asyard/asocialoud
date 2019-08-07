@@ -41,6 +41,20 @@ public class FollowDataController {
     }
 
 
+    @GetMapping("/has/{userName}")
+    public MemberResponse findFollowers(@PathVariable("userName") String userNameToQuery) {
+        logger.info("Retrieving all followers of : " + userNameToQuery);
+        MemberResponse memberResponse = new MemberResponse();
+
+        Member owner = memberRepository.findByLoginName(userNameToQuery);
+
+        List<FollowData> followDataList = followDataRepository.findAllFollowersOfMember(owner);
+        memberResponse.setData(followDataList);
+        memberResponse.setStatus(HttpStatus.OK.toString());
+        return memberResponse;
+    }
+
+
     @PostMapping("/add/{memberToFollow}")
     @ResponseStatus(HttpStatus.CREATED)
     public MemberResponse addToFollowers(@RequestBody Member ownerMember, @PathVariable("memberToFollow") String memberToFollow) {

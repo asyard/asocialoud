@@ -17,7 +17,7 @@ public class FollowData {
     @Column(name = "follow_date", nullable = false)
     private Date followDate;
 
-    @JsonIgnore
+    //@JsonIgnore
     @ManyToOne
     private Member owner;
 
