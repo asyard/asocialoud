@@ -81,6 +81,29 @@ public class FollowDataTest {
         Assert.assertTrue(member3FollowersList.stream().anyMatch(fd -> fd.getMemberToFollow().equals(member3)));
     }
 
+
+    @Test
+    @Transactional
+    public void when_member_follows_another_then_followed_by_me_should_be_true() {
+        Member member1 = createMember("testm1", "testr1", "testm1", "123");
+        Member member2 = createMember("testm2", "testr2", "testm2", "123");
+        Member member3 = createMember("testm3", "testr3", "testm3", "123");
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+
+
+        FollowData followData = createFollowData(member1, member2);
+
+        member1.getFollowDataList().add(followData);
+        memberRepository.save(member1);
+
+        Assert.assertTrue(followDataRepository.existsFollowDataByOwnerAndMemberToFollow(member1, member2));
+        Assert.assertFalse(followDataRepository.existsFollowDataByOwnerAndMemberToFollow(member2, member1));
+        Assert.assertFalse(followDataRepository.existsFollowDataByOwnerAndMemberToFollow(member2, member3));
+    }
+
     private Member createMember(String loginName, String realName, String email, String password) {
         Member member = new Member();
         member.setLoginName(loginName);
