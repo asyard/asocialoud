@@ -90,6 +90,7 @@
             }
         },
         created() {
+            document.title = 'Profile of ' + this.$route.params.username;
             userapi.retrieveByUserName(this.$route.params.username).then(response => {
                 this.user.exists = true;
                 this.user.realName = response.data.data.realName;

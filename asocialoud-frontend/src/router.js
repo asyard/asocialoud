@@ -15,27 +15,32 @@ Vue.use(Router);
 const router = new Router({
     mode: "history",
     routes: [
-        { path: '/', component: Welcome},
-        { path: '/register', component: Register},
-        { path: '/login', component: Login },
-        { path: '/feed', component: MemberArea,
+        {path: '/', component: Welcome},
+        {path: '/register', component: Register},
+        {path: '/login', component: Login},
+        {
+            path: '/feed', component: MemberArea,
             meta: {
-                requiresAuth: true
+                requiresAuth: true,
+                title: 'My Feed'
             }
         },
-        { path: '/profile/:username', component: Profile,
+        {
+            path: '/profile/:username', component: Profile,
             meta: {
                 requiresAuth: true
             }
         },
 
         // otherwise redirect to home
-        { path: '*', redirect: '/' }
+        {path: '*', redirect: '/'}
     ]
 });
 
+const DEFAULT_TITLE = 'Asocialoud';
 
 router.beforeEach((to, from, next) => {
+    document.title = to.meta.title || DEFAULT_TITLE;
     if (to.matched.some(record => record.meta.requiresAuth)) {
         // this route requires auth, check if logged in
         // if not, redirect to login page.
