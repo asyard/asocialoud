@@ -16,14 +16,14 @@
             <div v-if="followingDivEnabled">
                 <h3>Following</h3>
                 <b-list-group>
-                    <b-list-group-item v-for="fd in user.following" :key="fd.id">{{fd.memberToFollow.loginName}}<b-btn @click="unfollowSelected(fd.memberToFollow.loginName)">unfollow</b-btn></b-list-group-item>
+                    <b-list-group-item v-for="fd in user.following" :key="fd.id"><a :href="$router.resolve('/profile/'+fd.memberToFollow.loginName).href">{{fd.memberToFollow.loginName}}</a><b-btn @click="unfollowSelected(fd.memberToFollow.loginName)">unfollow</b-btn></b-list-group-item>
                 </b-list-group>
             </div>
 
             <div v-if="followersDivEnabled">
                 <h3>Your Followers</h3>
                 <b-list-group>
-                    <b-list-group-item v-for="fd in user.following" :key="fd.id">{{fd.owner.loginName}}<b-btn @click="alert(1)">block</b-btn></b-list-group-item>
+                    <b-list-group-item v-for="fd in user.following" :key="fd.id"><a :href="$router.resolve('/profile/'+fd.owner.loginName).href">{{fd.owner.loginName}}</a><b-btn @click="alert(1)">block</b-btn></b-list-group-item>
                 </b-list-group>
             </div>
 
