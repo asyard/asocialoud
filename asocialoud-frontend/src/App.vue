@@ -2,7 +2,8 @@
     <div id="app">
 
         <div v-if="$store.getters.isLoggedIn == false">
-            <img alt="App logo" src="./assets/asocialoud_logo.png" @click="home()">
+            <img alt="App logo" src="./assets/asocialoud_logo.png" @click="home()"><br/>
+            <h4>asocialoud</h4>
 
             <p>
                 Welcome to the new social platform!
@@ -11,7 +12,7 @@
 
         <div v-else>
             <img alt="App logo" src="./assets/asocialoud_mini.png" @click="home()">
-            <h3>Welcome again!</h3>
+            <h4>asocialoud</h4>
 
             <input id="selector" name="selector" placeholder="search for @member" autocomplete="off"
                    v-model="membernameforsearch" class="form-control" v-on:keyup="getFilteredMembers"/>
@@ -38,11 +39,15 @@
         <router-view/>
 
         <br/>
-        <h4>Follow us</h4>
-        <ul>
-            <li><a href="https://twitter.com" target="_blank" rel="noopener">twitter</a></li>
-            <li><a href="https://instagram.com" target="_blank" rel="noopener">instagram</a></li>
-        </ul>
+
+        <div id="footer">
+            <h4>Follow us</h4>
+            <ul style="vertical-align: bottom">
+                <li><a href="https://twitter.com" target="_blank" rel="noopener">twitter</a></li>
+                <li><a href="https://instagram.com" target="_blank" rel="noopener">instagram</a></li>
+            </ul>
+        </div>
+
 
     </div>
 </template>
@@ -131,6 +136,15 @@
         width: 250px;
         margin-left: auto;
         margin-right: auto;
+    }
+
+    #footer {
+        //height: 40px;
+        position: fixed;
+        bottom:0%;
+        width:100%;
+        //background-color: #393838;
+        opacity: 1;
     }
 
 
