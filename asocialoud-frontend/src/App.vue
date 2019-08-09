@@ -2,7 +2,7 @@
     <div id="app">
 
         <div v-if="$store.getters.isLoggedIn == false">
-            <img alt="App logo" src="./assets/logo.png" @click="home()">
+            <img alt="App logo" src="./assets/asocialoud_logo.png" @click="home()">
 
             <p>
                 Welcome to the new social platform!
