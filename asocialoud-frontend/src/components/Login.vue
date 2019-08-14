@@ -8,54 +8,10 @@
             <input type="password" placeholder="password" v-model="user.userPass"><br/>
             <b-btn variant="success" type="submit">Login</b-btn>
             <p v-if="loginError" class="error">Bad login information</p>
-        </form>
-
-
-        <!--<b-form @submit.prevent="login()">
-            <b-form-group id="input-group-2" label="Your Name:" label-for="input-2">
-                <b-form-input
-                        id="input-2"
-                        v-model="user.userName"
-                        required
-                        placeholder="Enter name"
-                        autocomplete="off"
-                ></b-form-input>
-            </b-form-group>
-
-            <b-form-group id="input-group-3" label="Your Password:" label-for="input-3">
-                <b-form-input
-                        id="input-3"
-                        v-model="user.realName"
-                        required
-                        placeholder="Enter password"
-                ></b-form-input>
-            </b-form-group>
-
-            <b-btn variant="success" type="submit">Login</b-btn>
-            <p v-if="loginError" class="error">Bad login information</p>
-        </b-form>
-
-
-        <form>
-            <p class="h4 text-center mb-4">Sign in</p>
-            <label for="defaultFormLoginEmailEx" class="grey-text">Your email</label>
-            <input type="email" id="defaultFormLoginEmailEx" class="form-control"/>
             <br/>
-            <label for="defaultFormLoginPasswordEx" class="grey-text">Your password</label>
-            <input type="password" id="defaultFormLoginPasswordEx" class="form-control"/>
-            <div class="text-center mt-4">
-                <button class="btn btn-indigo" type="submit">Login</button>
-            </div>
-        </form>-->
-
-        <!--
-                <div v-if="loginError">
-                    Login error
-                </div>
-
-        <div v-else-if="showResponse">
-            Success!
-        </div>-->
+            Dont't you have an account? <router-link to="/register">Create one!</router-link> <br/>
+            Forgot your login information ? <router-link to="/forgot">Let's try to recover</router-link>
+        </form>
 
     </div>
 

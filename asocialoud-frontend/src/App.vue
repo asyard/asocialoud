@@ -2,7 +2,8 @@
     <div id="app">
 
         <div v-if="$store.getters.isLoggedIn == false">
-            <img alt="App logo" src="./assets/logo.png" @click="home()">
+            <img alt="App logo" src="./assets/asocialoud_logo.png" @click="home()"><br/>
+            <h4>asocialoud</h4>
 
             <p>
                 Welcome to the new social platform!
@@ -11,16 +12,16 @@
 
         <div v-else>
             <img alt="App logo" src="./assets/asocialoud_mini.png" @click="home()">
-            <h3>Welcome again!</h3>
+            <h4>asocialoud</h4>
 
             <input id="selector" name="selector" placeholder="search for @member" autocomplete="off"
                    v-model="membernameforsearch" class="form-control" v-on:keyup="getFilteredMembers"/>
             <div v-if="searchComplete">
                 <b-list-group>
-                    <b-list-group-item v-for="user in users" :key="user.id">{{user.loginName}}
-                        <b-btn @click="followMember(user.loginName)">follow</b-btn>
-                        <b-btn @click="unfollowMember(user.loginName)">unfollow</b-btn>
-                        {{user.alreadyFollowing}}
+                    <b-list-group-item v-for="user in users" :key="user.id">
+                        <a :href="$router.resolve('/profile/'+user.memberLoginName).href">{{user.memberLoginName}}</a>
+                        <span v-if="$store.getters.getUserName!=user.memberLoginName && !user.followedByMe"><b-btn @click="followMember(user.memberLoginName)">follow</b-btn></span>
+                        <span v-if="$store.getters.getUserName!=user.memberLoginName && user.followedByMe"><b-btn @click="unfollowMember(user.memberLoginName)">unfollow</b-btn></span>
                     </b-list-group-item>
                 </b-list-group>
             </div>
@@ -38,11 +39,15 @@
         <router-view/>
 
         <br/>
-        <h4>Follow us</h4>
-        <ul>
-            <li><a href="https://twitter.com" target="_blank" rel="noopener">twitter</a></li>
-            <li><a href="https://instagram.com" target="_blank" rel="noopener">instagram</a></li>
-        </ul>
+
+        <div id="footer">
+            <h4>Follow us</h4>
+            <ul style="vertical-align: bottom">
+                <li><a href="https://twitter.com" target="_blank" rel="noopener">twitter</a></li>
+                <li><a href="https://instagram.com" target="_blank" rel="noopener">instagram</a></li>
+            </ul>
+        </div>
+
 
     </div>
 </template>
@@ -60,8 +65,10 @@
                 membernameforsearch: '',
                 searchComplete: false,
                 users: {
-                    loginName: '',
-                    //alreadyFollowing : false
+                    memberLoginName: '',
+                    followedByMe: false,
+                    followsMe: false,
+                    blockedByMe: false
                 },
             }
         },
@@ -75,7 +82,7 @@
                 this.users = [];
                 this.searchComplete = false;
                 if (this.membernameforsearch.length >= 3 && this.membernameforsearch.startsWith('@')) {
-                    userapi.getFiltered(this.membernameforsearch.substr(1, this.membernameforsearch.length)).then(response => {
+                    userapi.getFiltered(store.getters.getUserName, this.membernameforsearch.substr(1, this.membernameforsearch.length)).then(response => {
                         this.users = response.data.data;
                     })
                     // eslint-disable-next-line
@@ -129,6 +136,15 @@
         width: 250px;
         margin-left: auto;
         margin-right: auto;
+    }
+
+    #footer {
+        //height: 40px;
+        position: fixed;
+        bottom:0%;
+        width:100%;
+        //background-color: #393838;
+        opacity: 1;
     }
 
 

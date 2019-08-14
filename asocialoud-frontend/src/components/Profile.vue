@@ -7,14 +7,23 @@
 
             <b-btn @click="logout()">Logout</b-btn>
 
-            <b-btn @click="listFollowing()">List Following</b-btn>
+            <b-btn @click="listFollowing()">Following</b-btn>
+
+            <b-btn @click="listFollowers()">Your Followers</b-btn>
 
             <b-btn @click="retrieveUser()">Update Profile</b-btn>
 
             <div v-if="followingDivEnabled">
                 <h3>Following</h3>
                 <b-list-group>
-                    <b-list-group-item v-for="fd in user.following" :key="fd.id">{{fd.memberToFollow.loginName}}<b-btn @click="unfollowSelected(fd.memberToFollow.loginName)">unfollow</b-btn></b-list-group-item>
+                    <b-list-group-item v-for="fd in user.following" :key="fd.id"><a :href="$router.resolve('/profile/'+fd.memberToFollow.loginName).href">{{fd.memberToFollow.loginName}}</a><b-btn @click="unfollowSelected(fd.memberToFollow.loginName)">unfollow</b-btn></b-list-group-item>
+                </b-list-group>
+            </div>
+
+            <div v-if="followersDivEnabled">
+                <h3>Your Followers</h3>
+                <b-list-group>
+                    <b-list-group-item v-for="fd in user.following" :key="fd.id"><a :href="$router.resolve('/profile/'+fd.owner.loginName).href">{{fd.owner.loginName}}</a><b-btn @click="alert(1)">block</b-btn></b-list-group-item>
                 </b-list-group>
             </div>
 
@@ -68,6 +77,7 @@
             return {
                 updateDivEnabled: false,
                 followingDivEnabled: false,
+                followersDivEnabled: false,
                 hasError: false,
                 message: '',
                 user: {
@@ -80,6 +90,7 @@
             }
         },
         created() {
+            document.title = 'Profile of ' + this.$route.params.username;
             userapi.retrieveByUserName(this.$route.params.username).then(response => {
                 this.user.exists = true;
                 this.user.realName = response.data.data.realName;
@@ -94,6 +105,7 @@
                 this.hasError = false;
                 this.updateDivEnabled = false;
                 this.followingDivEnabled = false;
+                this.followersDivEnabled = false;
                 userapi.retrieveByUserName(store.getters.getUserName).then(response => {
                     this.updateDivEnabled = true;
                     this.user.realName = response.data.data.realName;
@@ -130,8 +142,24 @@
                 this.hasError = false;
                 this.updateDivEnabled = false;
                 this.followingDivEnabled = true;
+                this.followersDivEnabled = false;
                 this.user.following = [];
                 followapi.getFollowing(store.getters.getUserName).then(response => {
+                    this.user.following = response.data.data;
+                })
+                // eslint-disable-next-line
+                    .catch(e => {
+                        this.hasError = true;
+                    })
+            },
+
+            listFollowers() {
+                this.hasError = false;
+                this.updateDivEnabled = false;
+                this.followingDivEnabled = false;
+                this.followersDivEnabled = true;
+                this.user.following = [];
+                followapi.getFollowers(store.getters.getUserName).then(response => {
                     this.user.following = response.data.data;
                 })
                 // eslint-disable-next-line

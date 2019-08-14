@@ -1,6 +1,7 @@
 package org.yardimci.asocialoud.members.controller.member;
 
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,9 @@ import org.yardimci.asocialoud.members.controller.exception.MemberIdMismatchExce
 import org.yardimci.asocialoud.members.controller.exception.MemberInfoMissingException;
 import org.yardimci.asocialoud.members.controller.exception.MemberNotFoundException;
 import org.yardimci.asocialoud.members.db.model.Member;
+import org.yardimci.asocialoud.members.db.repository.FollowDataRepository;
 import org.yardimci.asocialoud.members.db.repository.MemberRepository;
+import org.yardimci.asocialoud.members.dto.MemberSearchResultDto;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,6 +31,9 @@ public class MemberController {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private FollowDataRepository followDataRepository;
 
     @GetMapping
     public MemberResponse findAll() {
@@ -74,6 +80,30 @@ public class MemberController {
         List<Member> byLoginName = memberRepository.findByLoginNameIgnoreCaseContaining(userNameToQuery);
         MemberResponse memberResponse = new MemberResponse();
         memberResponse.setData(byLoginName);
+        memberResponse.setStatus(byLoginName == null ? HttpStatus.NOT_FOUND.toString() : HttpStatus.OK.toString());
+        return memberResponse;
+    }
+
+
+    //todo move to secure area and check user from jwt principal
+    @GetMapping("/searchby/{ownerName}/{queryName}")
+    public MemberResponse findAllByUserName(@PathVariable("ownerName") String ownerName, @PathVariable("queryName") String userNameToQuery) {
+        logger.info("Retrieving members by login name : "+ userNameToQuery);
+        List<Member> byLoginName = memberRepository.findByLoginNameIgnoreCaseContaining(userNameToQuery);
+        Member ownerMember = memberRepository.findByLoginName(ownerName);
+
+        MemberResponse memberResponse = new MemberResponse();
+
+        List<MemberSearchResultDto> searchResultList = new ArrayList<>();
+        ModelMapper modelMapper = new ModelMapper();
+        for (Member resultMember : byLoginName) {
+            MemberSearchResultDto dto = modelMapper.map(resultMember, MemberSearchResultDto.class);
+            dto.setFollowedByMe(followDataRepository.existsFollowDataByOwnerAndMemberToFollow(ownerMember, resultMember));
+            dto.setFollowsMe(followDataRepository.existsFollowDataByOwnerAndMemberToFollow(resultMember, ownerMember));
+            searchResultList.add(dto);
+        }
+
+        memberResponse.setData(searchResultList);
         memberResponse.setStatus(byLoginName == null ? HttpStatus.NOT_FOUND.toString() : HttpStatus.OK.toString());
         return memberResponse;
     }

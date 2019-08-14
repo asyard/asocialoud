@@ -2,13 +2,15 @@
     <div class="register">
         <h1>Register</h1>
 
-        <form @submit.prevent="createNewUser()">
+        <form v-if="!showResponse" @submit.prevent="createNewUser()">
             <input type="text" v-model="user.realName" placeholder="real name" autofocus> <br/>
             <input type="text" v-model="user.userName" placeholder="user name"><br/>
             <input type="text" placeholder="email" v-model="user.userEmail"><br/>
             <input type="password" placeholder="password" v-model="user.userPass"><br/>
 
             <b-btn variant="success" type="submit">Create User</b-btn>
+            <br/>
+            Already a member? <router-link to="/login">Sign in</router-link>
         </form>
 
         <div v-if="showResponse">

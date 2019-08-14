@@ -16,4 +16,10 @@ public class HomeController {
         return "index.html";
     }
 
+    // Forwards all routes to FrontEnd except: '/', '/index.html', '/api', '/api/**'
+    @RequestMapping(value = "{_:^(?!index\\.html|api).+}")
+    public String redirectToHome() {
+        return "index.html";
+    }
+
 }

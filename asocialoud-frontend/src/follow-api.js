@@ -26,7 +26,13 @@ export default {
         }]
     }),
 
-    removeFollowing: (userName, userNameToUnFollow) => instance.post('/remove/'+userNameToUnFollow, { loginName : userName})
+    removeFollowing: (userName, userNameToUnFollow) => instance.post('/remove/'+userNameToUnFollow, { loginName : userName}),
+
+    getFollowers: (userName) => instance.get('/has/'+userName, {
+        transformResponse: [function (data) {
+            return data? JSON.parse(data) : data;
+        }]
+    })
 
 }
 
