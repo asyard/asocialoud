@@ -10,7 +10,7 @@ const instance = axios.create({
     //}
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('vuex')).token
+        'Authorization': localStorage.getItem('vuex') ? 'Bearer ' + JSON.parse(localStorage.getItem('vuex')).token : ''
     }
 
 });
