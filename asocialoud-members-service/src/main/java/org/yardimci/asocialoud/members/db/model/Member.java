@@ -39,9 +39,6 @@ public class Member {
     @OneToMany(/*mappedBy = "memberToFollow",*/ orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FollowData> followDataList;
 
-    @Transient
-    private String token;
-
     public Long getId() {
         return id;
     }
@@ -98,14 +95,6 @@ public class Member {
 
     public void setFollowDataList(List<FollowData> followDataList) {
         this.followDataList = followDataList;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     @Override

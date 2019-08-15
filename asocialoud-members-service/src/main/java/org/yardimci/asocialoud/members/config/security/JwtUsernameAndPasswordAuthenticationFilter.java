@@ -111,9 +111,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         MemberResponse loginResponse = new MemberResponse();
 
         Member loggedInMember = memberRepository.findByLoginName(user.getUsername());
-        loggedInMember.setToken(token);
-
-        loginResponse.setData(loggedInMember);
+        loginResponse.setData(new SuccessfulAuthenticationResponseData(loggedInMember, token));
         loginResponse.setStatus(HttpStatus.OK.toString());
 
         String jwtResponse = objectMapper.writeValueAsString(loginResponse);
@@ -140,4 +138,40 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
             this.password = password;
         }
     }
+
+    private static class SuccessfulAuthenticationResponseData {
+        private String /*loginName,*/ realName, token;
+
+        public SuccessfulAuthenticationResponseData(Member member, String token) {
+            //this.loginName = member.getLoginName();
+            this.realName = member.getRealName();
+            this.token = token;
+        }
+
+        /*public String getLoginName() {
+            return loginName;
+        }
+
+        public void setLoginName(String loginName) {
+            this.loginName = loginName;
+        }*/
+
+        public String getRealName() {
+            return realName;
+        }
+
+        public void setRealName(String realName) {
+            this.realName = realName;
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
+    }
+
+
 }
