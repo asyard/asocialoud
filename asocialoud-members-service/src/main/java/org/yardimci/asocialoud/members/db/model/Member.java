@@ -34,6 +34,9 @@ public class Member {
     @OneToMany(/*mappedBy = "memberToFollow",*/ orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FollowData> followDataList;
 
+    @Transient
+    private String token;
+
     public Long getId() {
         return id;
     }
@@ -84,6 +87,13 @@ public class Member {
         this.followDataList = followDataList;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     @Override
     public boolean equals(Object obj) {

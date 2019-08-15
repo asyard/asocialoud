@@ -6,17 +6,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.yardimci.asocialoud.members.controller.MemberResponse;
-import org.yardimci.asocialoud.members.controller.exception.MemberAlreadyExistsException;
-import org.yardimci.asocialoud.members.controller.exception.MemberIdMismatchException;
-import org.yardimci.asocialoud.members.controller.exception.MemberInfoMissingException;
 import org.yardimci.asocialoud.members.controller.exception.MemberNotFoundException;
+import org.yardimci.asocialoud.members.db.model.FollowData;
 import org.yardimci.asocialoud.members.db.model.Member;
 import org.yardimci.asocialoud.members.db.repository.FollowDataRepository;
 import org.yardimci.asocialoud.members.db.repository.MemberRepository;
 import org.yardimci.asocialoud.members.dto.MemberSearchResultDto;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +34,9 @@ public class MemberController {
 
     @Autowired
     private FollowDataRepository followDataRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping
     public MemberResponse findAll() {
@@ -75,32 +78,22 @@ public class MemberController {
 
 
     @GetMapping("/search/{userName}")
-    public MemberResponse findAllByUserName(@PathVariable("userName") String userNameToQuery) {
+    public MemberResponse findAllByUserName(@PathVariable("userName") String userNameToQuery, Principal principal) {
         logger.info("Retrieving members by login name : "+ userNameToQuery);
-        List<Member> byLoginName = memberRepository.findByLoginNameIgnoreCaseContaining(userNameToQuery);
-        MemberResponse memberResponse = new MemberResponse();
-        memberResponse.setData(byLoginName);
-        memberResponse.setStatus(byLoginName == null ? HttpStatus.NOT_FOUND.toString() : HttpStatus.OK.toString());
-        return memberResponse;
-    }
-
-
-    //todo move to secure area and check user from jwt principal
-    @GetMapping("/searchby/{ownerName}/{queryName}")
-    public MemberResponse findAllByUserName(@PathVariable("ownerName") String ownerName, @PathVariable("queryName") String userNameToQuery) {
-        logger.info("Retrieving members by login name : "+ userNameToQuery);
-        List<Member> byLoginName = memberRepository.findByLoginNameIgnoreCaseContaining(userNameToQuery);
-        Member ownerMember = memberRepository.findByLoginName(ownerName);
-
         MemberResponse memberResponse = new MemberResponse();
 
+        List<Member> byLoginName = memberRepository.findByLoginNameIgnoreCaseContaining(userNameToQuery);
         List<MemberSearchResultDto> searchResultList = new ArrayList<>();
-        ModelMapper modelMapper = new ModelMapper();
-        for (Member resultMember : byLoginName) {
-            MemberSearchResultDto dto = modelMapper.map(resultMember, MemberSearchResultDto.class);
-            dto.setFollowedByMe(followDataRepository.existsFollowDataByOwnerAndMemberToFollow(ownerMember, resultMember));
-            dto.setFollowsMe(followDataRepository.existsFollowDataByOwnerAndMemberToFollow(resultMember, ownerMember));
-            searchResultList.add(dto);
+
+        if (byLoginName != null) {
+            Member ownerMember = memberRepository.findByLoginName(principal.getName());
+            ModelMapper modelMapper = new ModelMapper();
+            for (Member resultMember : byLoginName) {
+                MemberSearchResultDto dto = modelMapper.map(resultMember, MemberSearchResultDto.class);
+                dto.setFollowedByMe(followDataRepository.existsFollowDataByOwnerAndMemberToFollow(ownerMember, resultMember));
+                dto.setFollowsMe(followDataRepository.existsFollowDataByOwnerAndMemberToFollow(resultMember, ownerMember));
+                searchResultList.add(dto);
+            }
         }
 
         memberResponse.setData(searchResultList);
@@ -108,31 +101,7 @@ public class MemberController {
         return memberResponse;
     }
 
-
-    @PostMapping("/login")
-    @ResponseStatus(HttpStatus.OK)
-    public MemberResponse login(@RequestBody Member member) {
-        logger.info("Retrieving member");
-        Member byLoginName = memberRepository.findByLoginName(member.getLoginName());
-        if (byLoginName == null) {
-            logger.debug("Member not found by given login name");
-            throw new MemberNotFoundException();
-        }
-
-        if (!byLoginName.getPassword().equals(member.getPassword())) {
-            logger.debug("Member password is invalid");
-            throw new MemberIdMismatchException("Member credentials are invalid");
-        }
-        MemberResponse memberResponse = new MemberResponse();
-        memberResponse.setStatus(HttpStatus.OK.toString());
-        memberResponse.setData(byLoginName);
-
-        return memberResponse;
-    }
-
-
-
-    @PostMapping
+    @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public MemberResponse create(@RequestBody Member member) {
         logger.info("Save member request received");
@@ -163,6 +132,7 @@ public class MemberController {
 
         try {
             logger.info("Saving member : " + member.getLoginName());
+            member.setPassword(passwordEncoder.encode(member.getPassword()));
             memberRepository.save(member);
             memberResponse.setStatus(HttpStatus.CREATED.toString());
             memberResponse.setData(member);
@@ -175,11 +145,29 @@ public class MemberController {
         return memberResponse;
     }
 
+    // todo require admin privilege
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public MemberResponse delete(@PathVariable Long id) {
         logger.info("Deleting user with id : " + id);
-        memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
-        memberRepository.deleteById(id);
+        MemberResponse memberResponse = new MemberResponse();
+        Member memberToDelete = memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
+        try {
+            //todo convert to service, introduce @transactional.
+
+            // step 1 : delete member from other member's follow data
+            logger.info("Removing follow data");
+            List<FollowData> allFollowerDataOfMember = followDataRepository.findAllFollowersOfMember(memberToDelete);
+            for (FollowData fd : allFollowerDataOfMember) {
+                followDataRepository.delete(fd);
+            }
+            logger.info("Removing user");
+            memberRepository.deleteById(id);
+            memberResponse.setStatus(HttpStatus.OK.toString());
+        } catch (Exception e) {
+            logger.error("Unable to delete member : " + id, e);
+            memberResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+        }
+        return memberResponse;
     }
 
     @PutMapping("/{userName}")

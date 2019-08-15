@@ -82,7 +82,7 @@
                 this.users = [];
                 this.searchComplete = false;
                 if (this.membernameforsearch.length >= 3 && this.membernameforsearch.startsWith('@')) {
-                    userapi.getFiltered(store.getters.getUserName, this.membernameforsearch.substr(1, this.membernameforsearch.length)).then(response => {
+                    userapi.getFiltered(this.membernameforsearch.substr(1, this.membernameforsearch.length)).then(response => {
                         this.users = response.data.data;
                     })
                     // eslint-disable-next-line

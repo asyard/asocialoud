@@ -18,6 +18,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         loginSuccess: false,
+        token: '',
         loginError: false,
         userName: null,
         realName: null
@@ -29,18 +30,21 @@ export default new Vuex.Store({
             state.loginSuccess = true;
             state.userName = payload.userName;
             state.realName = payload.realName;
+            state.token = payload.token;
         },
         login_error(state, payload){
             state.loginError = true;
             state.loginSuccess = false;
             state.userName = payload.userName;
             state.realName = null;
+            state.token = '';
         },
         login_terminate(state, payload){
             state.loginSuccess = false;
             state.loginError = false;
             state.userName = payload.userName;
             state.realName = null;
+            state.token = '';
         },
         login_refresh(state, payload){
             state.loginSuccess = true;
@@ -60,7 +64,8 @@ export default new Vuex.Store({
                             // place the loginSuccess state into our vuex store
                             commit('login_success', {
                                 userName: username,
-                                realName: response.data.data.realName
+                                realName: response.data.data.realName,
+                                token: response.data.data.token
                             });
                         }
                         resolve(response)
