@@ -21,6 +21,13 @@
 <script>
     export default {
         name: "Login",
+        created() {
+            if (this.$store.getters.isLoggedIn) {
+                window.location.href = "/feed";
+            }
+        },
+
+
         data() {
             return {
                 response: [],
