@@ -51,7 +51,13 @@
 
         <div v-else-if="user.exists">
             Profile of : {{$route.params.username}}<br/>
-            Real Name : {{user.realName}}
+            Real Name : {{user.realName}} <br/>
+
+            <span v-if="!user.iFollow"><b-btn @click="followSelected($route.params.username)">follow</b-btn></span>
+            <span v-if="user.iFollow"><b-btn @click="unfollowSelected($route.params.username)">unfollow</b-btn></span>
+            <br/>
+
+            <h3>Latest Feeds :</h3>
         </div>
 
         <div v-else>
@@ -85,6 +91,8 @@
                     userName: '', //store.getters.getUserName,
                     email: '',
                     exists: false,
+                    iFollow: false,
+                    iBlock: false,
                     following: []
                 }
             }
@@ -93,7 +101,8 @@
             document.title = 'Profile of ' + this.$route.params.username;
             userapi.retrieveByUserName(this.$route.params.username).then(response => {
                 this.user.exists = true;
-                this.user.realName = response.data.data.realName;
+                this.user.realName = response.data.data.memberRealName;
+                this.user.iFollow = response.data.data.followedByMe;
             })
             // eslint-disable-next-line
                 .catch(e => {
@@ -108,8 +117,8 @@
                 this.followersDivEnabled = false;
                 userapi.retrieveByUserName(store.getters.getUserName).then(response => {
                     this.updateDivEnabled = true;
-                    this.user.realName = response.data.data.realName;
-                    this.user.email = response.data.data.email;
+                    this.user.realName = response.data.data.memberRealName;
+                    this.user.email = response.data.data.memberEmail;
                 })
                 // eslint-disable-next-line
                     .catch(e => {
@@ -168,9 +177,21 @@
                     })
             },
 
+            followSelected(userToAdd) {
+                followapi.addFollowing(store.getters.getUserName, userToAdd).then(response => {
+                    this.user.following = response.data.data;
+                    this.user.iFollow=true;
+                })
+                // eslint-disable-next-line
+                    .catch(e => {
+                        this.hasError = true;
+                    })
+            },
+
             unfollowSelected(userToRemove) {
                 followapi.removeFollowing(store.getters.getUserName, userToRemove).then(response => {
                     this.user.following = response.data.data;
+                    this.user.iFollow=false;
                 })
                 // eslint-disable-next-line
                     .catch(e => {

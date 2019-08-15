@@ -20,8 +20,10 @@
                 <b-list-group>
                     <b-list-group-item v-for="user in users" :key="user.id">
                         <a :href="$router.resolve('/profile/'+user.memberLoginName).href">{{user.memberLoginName}}</a>
+                        <!--
                         <span v-if="$store.getters.getUserName!=user.memberLoginName && !user.followedByMe"><b-btn @click="followMember(user.memberLoginName)">follow</b-btn></span>
                         <span v-if="$store.getters.getUserName!=user.memberLoginName && user.followedByMe"><b-btn @click="unfollowMember(user.memberLoginName)">unfollow</b-btn></span>
+                        -->
                     </b-list-group-item>
                 </b-list-group>
             </div>
@@ -93,10 +95,22 @@
                 }
             },
             followMember(memberToFollow) {
-                followapi.addFollowing(store.getters.getUserName, memberToFollow);
+                followapi.addFollowing(store.getters.getUserName, memberToFollow).then(response => {
+                    this.user.followedByMe=true;
+                })
+                // eslint-disable-next-line
+                    .catch(e => {
+                        this.hasError = true;
+                    })
             },
             unfollowMember(memberToUnFollow) {
-                followapi.removeFollowing(store.getters.getUserName, memberToUnFollow);
+                followapi.removeFollowing(store.getters.getUserName, memberToUnFollow).then(response => {
+                    this.user.followedByMe=false;
+                })
+                // eslint-disable-next-line
+                    .catch(e => {
+                        this.hasError = true;
+                    })
             }
         }
     }
