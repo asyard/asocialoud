@@ -1,17 +1,24 @@
 package org.yardimci.asocialoud.members;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.mapper.ObjectMapper;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
+import io.restassured.specification.RequestSpecification;
+import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.yardimci.asocialoud.members.db.model.Member;
 
+import java.util.Map;
+
+import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static org.junit.Assert.assertEquals;
 
@@ -30,9 +37,35 @@ public class MemberTest {
         RestAssured.port = port;
     }
 
+    private String authenticateAndGetToken() {
+        Response response = given().contentType(ContentType.JSON).body("{\n" +
+                "\t\"username\" : \"admin\",\n" +
+                "\t\"password\" : \"admin\"\n" +
+                "}").get("/api/members/login");
+        response.then().statusCode(HttpStatus.SC_OK);
+
+        String bearerToken = (String) ((Map) response.getBody().jsonPath().get("data")).get("token");
+
+        return bearerToken;
+    }
+
     @Test
     public void whenGetAllMembers_thenOK() {
-        when().get("/api/members").then().statusCode(org.apache.http.HttpStatus.SC_OK);
+        String bearerToken = authenticateAndGetToken();
+
+        Response response = given()
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
+                .when().get("/api/members").then().contentType(ContentType.JSON).extract().response();
+
+        assertEquals(HttpStatus.SC_OK, response.getStatusCode());
+        System.out.println(response.asString());
+
         //Response response = RestAssured.get(API_ROOT);
         //assertEquals(HttpStatus.OK.value(), response.getStatusCode());
     }

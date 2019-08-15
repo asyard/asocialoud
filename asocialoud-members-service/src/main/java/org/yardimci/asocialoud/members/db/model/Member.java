@@ -16,6 +16,11 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
+    @Column(name = "type", length = 1)
+    @Enumerated(EnumType.STRING)
+    private MemberType memberType = MemberType.B;
+
     @Column(name = "username", nullable = false, unique = true)
     private String loginName;
 
@@ -43,6 +48,14 @@ public class Member {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public MemberType getMemberType() {
+        return memberType;
+    }
+
+    public void setMemberType(MemberType memberType) {
+        this.memberType = memberType;
     }
 
     public String getLoginName() {

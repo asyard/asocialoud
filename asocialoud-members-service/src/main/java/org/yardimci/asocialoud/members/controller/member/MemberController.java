@@ -12,6 +12,7 @@ import org.yardimci.asocialoud.members.controller.MemberResponse;
 import org.yardimci.asocialoud.members.controller.exception.MemberNotFoundException;
 import org.yardimci.asocialoud.members.db.model.FollowData;
 import org.yardimci.asocialoud.members.db.model.Member;
+import org.yardimci.asocialoud.members.db.model.MemberType;
 import org.yardimci.asocialoud.members.db.repository.FollowDataRepository;
 import org.yardimci.asocialoud.members.db.repository.MemberRepository;
 import org.yardimci.asocialoud.members.dto.MemberSearchResultDto;
@@ -43,11 +44,9 @@ public class MemberController {
         logger.info("Retrieving all members");
         MemberResponse memberResponse = new MemberResponse();
 
-        List<Member> memberList = new ArrayList<>();
-
-        Iterator<Member> memberIterator = memberRepository.findAll().iterator();
-
-        memberIterator.forEachRemaining(memberList::add);
+        List<Member> memberList = memberRepository.findAllByMemberType(MemberType.B);
+        //Iterator<Member> memberIterator = memberRepository.findAll().iterator();
+        //memberIterator.forEachRemaining(memberList::add);
 
         memberResponse.setData(memberList);
         memberResponse.setStatus(HttpStatus.OK.toString());
@@ -55,11 +54,22 @@ public class MemberController {
     }
 
     @GetMapping("/{userName}")
-    public MemberResponse findByUserName(@PathVariable("userName") String userNameToQuery) {
+    public MemberResponse findByUserName(@PathVariable("userName") String userNameToQuery, Principal principal) {
         logger.info("Retrieving member by login name : "+ userNameToQuery);
         Member byLoginName = memberRepository.findByLoginName(userNameToQuery);
+        MemberSearchResultDto searchResultDto = new MemberSearchResultDto();
+        if (byLoginName != null) {
+            ModelMapper modelMapper = new ModelMapper();
+            searchResultDto = modelMapper.map(byLoginName, MemberSearchResultDto.class);
+            if (!userNameToQuery.equals(principal.getName())) {
+                searchResultDto.setMemberEmail("");
+                Member ownerMember = memberRepository.findByLoginName(principal.getName());
+                searchResultDto.setFollowedByMe(followDataRepository.existsFollowDataByOwnerAndMemberToFollow(ownerMember, byLoginName));
+                searchResultDto.setFollowsMe(followDataRepository.existsFollowDataByOwnerAndMemberToFollow(byLoginName, ownerMember));
+            }
+        }
         MemberResponse memberResponse = new MemberResponse();
-        memberResponse.setData(byLoginName);
+        memberResponse.setData(searchResultDto);
         memberResponse.setStatus(byLoginName == null ? HttpStatus.NOT_FOUND.toString() : HttpStatus.OK.toString());
         return memberResponse;
     }
@@ -82,7 +92,7 @@ public class MemberController {
         logger.info("Retrieving members by login name : "+ userNameToQuery);
         MemberResponse memberResponse = new MemberResponse();
 
-        List<Member> byLoginName = memberRepository.findByLoginNameIgnoreCaseContaining(userNameToQuery);
+        List<Member> byLoginName = memberRepository.findByLoginNameIgnoreCaseContainingAndMemberType(userNameToQuery, MemberType.B);
         List<MemberSearchResultDto> searchResultList = new ArrayList<>();
 
         if (byLoginName != null) {
@@ -133,6 +143,7 @@ public class MemberController {
         try {
             logger.info("Saving member : " + member.getLoginName());
             member.setPassword(passwordEncoder.encode(member.getPassword()));
+            //member.setMemberType(MemberType.B);
             memberRepository.save(member);
             memberResponse.setStatus(HttpStatus.CREATED.toString());
             memberResponse.setData(member);
