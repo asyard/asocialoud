@@ -10,6 +10,7 @@ import org.yardimci.asocialoud.members.db.model.FollowData;
 import org.yardimci.asocialoud.members.db.model.Member;
 import org.yardimci.asocialoud.members.db.repository.FollowDataRepository;
 import org.yardimci.asocialoud.members.db.repository.MemberRepository;
+import org.yardimci.asocialoud.members.dto.RequestMemberDto;
 
 import java.util.Date;
 import java.util.List;
@@ -57,7 +58,7 @@ public class FollowDataController {
 
     @PostMapping("/add/{memberToFollow}")
     @ResponseStatus(HttpStatus.CREATED)
-    public MemberResponse addToFollowers(@RequestBody Member ownerMember, @PathVariable("memberToFollow") String memberToFollow) {
+    public MemberResponse addToFollowers(@RequestBody RequestMemberDto ownerMember, @PathVariable("memberToFollow") String memberToFollow) {
         logger.info("Follow member request received");
         MemberResponse memberResponse = new MemberResponse();
 
@@ -101,7 +102,7 @@ public class FollowDataController {
 
     @PostMapping("/remove/{memberToUnFollow}")
     @ResponseStatus(HttpStatus.CREATED)
-    public MemberResponse removeFromFollowers(@RequestBody Member ownerMember, @PathVariable("memberToUnFollow") String memberToUnFollow) {
+    public MemberResponse removeFromFollowers(@RequestBody RequestMemberDto ownerMember, @PathVariable("memberToUnFollow") String memberToUnFollow) {
         logger.info("Unfollow member request received : " + memberToUnFollow);
         MemberResponse memberResponse = new MemberResponse();
 
@@ -112,9 +113,7 @@ public class FollowDataController {
             return memberResponse;
         }
 
-
         Member owner = memberRepository.findByLoginName(ownerMember.getLoginName());
-
         Member toUnfollow = memberRepository.findByLoginName(memberToUnFollow);
 
         FollowData followDataToRemove = followDataRepository.findByOwnerAndMemberToFollow(owner, toUnfollow);
@@ -136,9 +135,6 @@ public class FollowDataController {
             memberResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
             memberResponse.setData("error.notfound");
         }
-
-
-
 
         return memberResponse;
     }

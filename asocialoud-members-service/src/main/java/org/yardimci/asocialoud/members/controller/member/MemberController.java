@@ -17,6 +17,7 @@ import org.yardimci.asocialoud.members.db.repository.FollowDataRepository;
 import org.yardimci.asocialoud.members.db.repository.MemberRepository;
 import org.yardimci.asocialoud.members.db.service.MemberService;
 import org.yardimci.asocialoud.members.dto.MemberSearchResultDto;
+import org.yardimci.asocialoud.members.dto.RequestMemberDto;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -116,7 +117,7 @@ public class MemberController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public MemberResponse create(@RequestBody Member member) {
+    public MemberResponse create(@RequestBody RequestMemberDto member) {
         logger.info("Save member request received");
         MemberResponse memberResponse = new MemberResponse();
 
@@ -128,28 +129,33 @@ public class MemberController {
         }
 
 
-        Member byLoginName = memberRepository.findByLoginName(member.getLoginName());
-        if (byLoginName != null) {
+        Member userInDb = memberRepository.findByLoginName(member.getLoginName());
+        if (userInDb != null) {
             logger.warn("Member name already exists");
             memberResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
             memberResponse.setData("error.membernameexists");
             return memberResponse;        }
 
-        Member byEmail = memberRepository.findByEmail(member.getEmail());
-        if (byEmail != null) {
+        userInDb = memberRepository.findByEmail(member.getEmail());
+        if (userInDb != null) {
             logger.warn("Member email already exists");
             memberResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
             memberResponse.setData("error.emailistaken");
             return memberResponse;
         }
 
+        userInDb = new Member();
+        userInDb.setLoginName(member.getLoginName());
+        userInDb.setRealName(member.getRealName());
+        userInDb.setEmail(member.getEmail());
+
         try {
-            logger.info("Saving member : " + member.getLoginName());
-            member.setPassword(passwordEncoder.encode(member.getPassword()));
+            logger.info("Saving member : " + userInDb.getLoginName());
+            userInDb.setPassword(passwordEncoder.encode(member.getPassword()));
             //member.setMemberType(MemberType.B);
-            memberRepository.save(member);
+            memberRepository.save(userInDb);
             memberResponse.setStatus(HttpStatus.CREATED.toString());
-            memberResponse.setData(member);
+            memberResponse.setData(userInDb);
         } catch (Exception e) {
             logger.error("Unable to save member", e);
             memberResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
@@ -209,7 +215,7 @@ public class MemberController {
 
 
     @PutMapping("/{userName}")
-    public MemberResponse updateMember(@RequestBody Member member, @PathVariable String userName) {
+    public MemberResponse updateMember(@RequestBody RequestMemberDto member, @PathVariable String userName) {
         logger.info("Updating user : " + userName);
         MemberResponse memberResponse = new MemberResponse();
 
@@ -220,14 +226,13 @@ public class MemberController {
             memberResponse.setData("error.missinginformation");
             return memberResponse;
         }
-        Member savedMember = null;
         try {
             Member userInDb = memberRepository.findByLoginName(userName);
             userInDb.setRealName(member.getRealName());
             userInDb.setEmail(member.getEmail());
 
-            savedMember = memberRepository.save(userInDb);
-            memberResponse.setData(savedMember);
+            memberRepository.save(userInDb);
+            memberResponse.setData(userInDb);
             memberResponse.setStatus(HttpStatus.OK.toString());
         } catch (Exception e) {
             logger.error("Unable to update user : " + userName, e);
