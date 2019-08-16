@@ -9,8 +9,9 @@ import java.util.List;
 
 public interface MemberRepository extends CrudRepository<Member, Long> {
 
-    Member findByLoginName(String loginName);
+    void deleteByLoginName(String loginName);
 
+    Member findByLoginName(String loginName);
 
     Member findByEmail(String email);
 

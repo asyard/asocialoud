@@ -5,21 +5,21 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.yardimci.asocialoud.members.controller.MemberResponse;
 import org.yardimci.asocialoud.members.controller.exception.MemberNotFoundException;
-import org.yardimci.asocialoud.members.db.model.FollowData;
 import org.yardimci.asocialoud.members.db.model.Member;
 import org.yardimci.asocialoud.members.db.model.MemberType;
 import org.yardimci.asocialoud.members.db.repository.FollowDataRepository;
 import org.yardimci.asocialoud.members.db.repository.MemberRepository;
+import org.yardimci.asocialoud.members.db.service.MemberService;
 import org.yardimci.asocialoud.members.dto.MemberSearchResultDto;
 
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +38,9 @@ public class MemberController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private MemberService memberService;
 
     @GetMapping
     public MemberResponse findAll() {
@@ -156,10 +159,31 @@ public class MemberController {
         return memberResponse;
     }
 
-    // todo require admin privilege
-    @DeleteMapping("/{id}")
+    /*@DeleteMapping("/{id}")
     public MemberResponse delete(@PathVariable Long id) {
         logger.info("Deleting user with id : " + id);
+        MemberResponse memberResponse = new MemberResponse();
+        try {
+
+            logger.info("Removing user");
+            memberRepository.deleteById(id);
+            memberResponse.setStatus(HttpStatus.OK.toString());
+        } catch (Exception e) {
+            logger.error("Unable to delete member : " + id, e);
+            if (e instanceof EmptyResultDataAccessException) {
+                memberResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.toString());
+            } else {
+                memberResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+            }
+        }
+        return memberResponse;
+    }*/
+
+
+    // todo require admin privilege if requester is not same as target user
+    @DeleteMapping("/{userName}")
+    public MemberResponse delete(@PathVariable String userName) {
+        logger.info("Deleting user : " + userName);
         MemberResponse memberResponse = new MemberResponse();
         try {
             // no need below since we added OnDelete on follow data - member attributes
@@ -169,15 +193,20 @@ public class MemberController {
             for (FollowData fd : allFollowerDataOfMember) {
                 followDataRepository.delete(fd);
             }*/
-            logger.info("Removing user");
-            memberRepository.deleteById(id);
+            memberService.deleteMemberByLoginName(userName);
             memberResponse.setStatus(HttpStatus.OK.toString());
         } catch (Exception e) {
-            logger.error("Unable to delete member : " + id, e);
-            memberResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+            logger.error("Unable to delete member : " + userName, e);
+            if (e instanceof EmptyResultDataAccessException) {
+                memberResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.toString());
+            } else {
+                memberResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+            }
         }
         return memberResponse;
     }
+
+
 
     @PutMapping("/{userName}")
     public MemberResponse updateMember(@RequestBody Member member, @PathVariable String userName) {

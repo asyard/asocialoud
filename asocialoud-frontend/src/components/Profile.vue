@@ -5,6 +5,8 @@
 
             <h2>Your profile</h2>
 
+            Your Name : {{$store.getters.getRealName}} <br/>
+
             <b-btn @click="logout()">Logout</b-btn>
 
             <b-btn @click="listFollowing()">Following</b-btn>
@@ -12,6 +14,9 @@
             <b-btn @click="listFollowers()">Your Followers</b-btn>
 
             <b-btn @click="retrieveUser()">Update Profile</b-btn>
+
+
+            <b-btn @click="deleteAccount(5)">Delete Account</b-btn>
 
             <div v-if="followingDivEnabled">
                 <h3>Following</h3>
@@ -87,8 +92,8 @@
                 hasError: false,
                 message: '',
                 user: {
-                    realName: '', //store.getters.getRealName,
-                    userName: '', //store.getters.getUserName,
+                    realName: '',
+                    userName: '',
                     email: '',
                     exists: false,
                     iFollow: false,
@@ -196,6 +201,39 @@
                 // eslint-disable-next-line
                     .catch(e => {
                         this.hasError = true;
+                    })
+            },
+
+            deleteAccount() {
+                this.$bvModal.msgBoxConfirm('Are you sure? All your data will be lost', {
+                    title: 'Please Confirm',
+                    size: 'sm',
+                    buttonSize: 'sm',
+                    okVariant: 'danger',
+                    okTitle: 'YES',
+                    cancelTitle: 'NO',
+                    footerClass: 'p-2',
+                    hideHeaderClose: false,
+                    centered: true
+                })
+                    .then(value => {
+                        if (value) {
+                            userapi.removeForUserName(store.getters.getUserName).then(response => {
+                                if (response.data.status == 200) {
+                                    this.logout();
+                                } else {
+                                    throw "Delete failed";
+                                }
+                            })
+                                .catch(e => {
+                                    this.hasError = true;
+                                    //this.message = 'Unable to delete account. Please try later. Sorry. Really.';
+                                })
+                        }
+                    })
+                    .catch(err => {
+                        this.hasError = true;
+                        //this.message = 'Unable to delete account. Please try later. Sorry. Really.';
                     })
             },
 

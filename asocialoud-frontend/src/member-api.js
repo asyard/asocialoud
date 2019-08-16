@@ -34,7 +34,9 @@ export default {
     updateByUserName: (userName, realNameText, emailTxt) => instance.put('/'+userName, {realName: realNameText, email: emailTxt}),
 
     // (D)elete
-    removeForId: (id) => instance.delete('/'+id),
+    //removeForId: (id) => instance.delete('/'+id),
+
+    removeForUserName: (userName) => instance.delete('/'+userName),
 
     retrieveByUserName: (userName) => instance.get('/'+userName),
 
