@@ -12,7 +12,7 @@ public class MemberService {
     @Autowired
     private MemberRepository memberRepository;
 
-    // default repository delete method does not require transactional annotation. Here we need.
+    // default repository methods already have transactional annotation. Here we need.
     @Transactional
     public void deleteMemberByLoginName(String memberLoginName) {
         memberRepository.deleteByLoginName(memberLoginName);
