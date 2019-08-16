@@ -8,6 +8,10 @@ const instance = axios.create({
     //headers: {
     //    'Access-Control-Allow-Origin': 'http://localhost:8070'
     //}
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('vuex') ? 'Bearer ' + JSON.parse(localStorage.getItem('vuex')).token : ''
+    }
 });
 
 

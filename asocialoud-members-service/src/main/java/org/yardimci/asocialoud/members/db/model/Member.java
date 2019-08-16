@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -16,9 +15,13 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
+    @Column(name = "type", length = 1)
+    @Enumerated(EnumType.STRING)
+    private MemberType memberType = MemberType.B;
+
     @Column(name = "username", nullable = false, unique = true)
     private String loginName;
-
 
     @Column(name = "realname", nullable = false)
     private String realName;
@@ -30,9 +33,9 @@ public class Member {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @JsonIgnore
-    @OneToMany(/*mappedBy = "memberToFollow",*/ orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<FollowData> followDataList;
+    //we really dont need the collection on the parent side of the association.
+    //@OneToMany(mappedBy = "tbl_members", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    //private List<FollowData> followDataList;
 
     public Long getId() {
         return id;
@@ -40,6 +43,14 @@ public class Member {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public MemberType getMemberType() {
+        return memberType;
+    }
+
+    public void setMemberType(MemberType memberType) {
+        this.memberType = memberType;
     }
 
     public String getLoginName() {
@@ -75,15 +86,6 @@ public class Member {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    public List<FollowData> getFollowDataList() {
-        return followDataList;
-    }
-
-    public void setFollowDataList(List<FollowData> followDataList) {
-        this.followDataList = followDataList;
-    }
-
 
     @Override
     public boolean equals(Object obj) {

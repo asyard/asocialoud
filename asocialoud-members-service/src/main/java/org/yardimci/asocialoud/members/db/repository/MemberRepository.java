@@ -3,10 +3,13 @@ package org.yardimci.asocialoud.members.db.repository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.Repository;
 import org.yardimci.asocialoud.members.db.model.Member;
+import org.yardimci.asocialoud.members.db.model.MemberType;
 
 import java.util.List;
 
 public interface MemberRepository extends CrudRepository<Member, Long> {
+
+    void deleteByLoginName(String loginName);
 
     Member findByLoginName(String loginName);
 
@@ -15,5 +18,10 @@ public interface MemberRepository extends CrudRepository<Member, Long> {
     List<Member> findMembersByLoginNameContains(String loginName); // List<Member> findMembersByLoginNameContaining(String loginName);
 
     List<Member> findByLoginNameIgnoreCaseContaining(String loginName);
+
+    List<Member> findByLoginNameIgnoreCaseContainingAndMemberType(String loginName, MemberType memberType);
+
+    List<Member> findAllByMemberType(MemberType memberType);
+
 
 }

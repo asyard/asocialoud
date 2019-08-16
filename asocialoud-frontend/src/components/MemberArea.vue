@@ -12,7 +12,7 @@
                 <h5>Here are all members : </h5>
 
                 <b-list-group>
-                    <b-list-group-item v-for="user in users" :key="user.id">{{user.loginName}} {{user.realName}} <b-btn @click="deleteSelected(user.id)">delete</b-btn></b-list-group-item>
+                    <b-list-group-item v-for="user in users" :key="user.id">{{user.loginName}} {{user.realName}} <b-btn @click="deleteSelected(user.loginName)">delete</b-btn></b-list-group-item>
                 </b-list-group>
             </div>
         </div>
@@ -54,9 +54,9 @@
                     })
             },
 
-            deleteSelected(id) {
+            deleteSelected(userName) {
                 // eslint-disable-next-line
-                userapi.removeForId(id).then(response => {
+                userapi.removeForUserName(userName).then(response => {
                     // JSON responses are automatically parsed.
                     this.listMembers();
                 })

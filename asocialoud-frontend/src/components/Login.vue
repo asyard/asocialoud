@@ -21,6 +21,13 @@
 <script>
     export default {
         name: "Login",
+        created() {
+            if (this.$store.getters.isLoggedIn) {
+                window.location.href = "/feed";
+            }
+        },
+
+
         data() {
             return {
                 response: [],
@@ -42,7 +49,8 @@
                 this.$store.dispatch("login", {username: this.user.userName, password: this.user.userPass})
                     .then(() => {
                         this.loginError = false;
-                        this.$router.push('/feed');
+                        //this.$router.push('/feed');
+                        window.location.href = "/feed";
                     })
                     .catch(e => {
                         this.loginError = true;

@@ -4,6 +4,7 @@ public class MemberSearchResultDto {
 
     private String memberLoginName;
     private String memberRealName;
+    private String memberEmail;
     private boolean followedByMe;
     private boolean followsMe;
     private boolean blockedByMe;
@@ -22,6 +23,14 @@ public class MemberSearchResultDto {
 
     public void setMemberRealName(String memberRealName) {
         this.memberRealName = memberRealName;
+    }
+
+    public String getMemberEmail() {
+        return memberEmail;
+    }
+
+    public void setMemberEmail(String memberEmail) {
+        this.memberEmail = memberEmail;
     }
 
     public boolean isFollowedByMe() {
