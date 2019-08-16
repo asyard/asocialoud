@@ -68,13 +68,10 @@ public class FollowDataController {
             return memberResponse;
         }
 
-
         Member owner = memberRepository.findByLoginName(ownerMember.getLoginName());
-
         Member toFollow = memberRepository.findByLoginName(memberToFollow);
 
-
-        boolean alreadyFollowing = owner.getFollowDataList().stream().anyMatch(f -> f.getMemberToFollow().equals(toFollow));
+        boolean alreadyFollowing = followDataRepository.existsFollowDataByOwnerAndMemberToFollow(owner, toFollow);
         if (alreadyFollowing) {
             logger.debug("Already following");
             memberResponse.setStatus(HttpStatus.EXPECTATION_FAILED.toString());
@@ -86,15 +83,13 @@ public class FollowDataController {
             followData.setFollowDate(new Date());
             followData.setAllowRelauding(true);
 
-            owner.getFollowDataList().add(followData);
-
             try {
-                logger.info("Saving member : " + ownerMember);
-                memberRepository.save(owner);
+                logger.info("Saving follow data");
+                followDataRepository.save(followData);
                 memberResponse.setStatus(HttpStatus.CREATED.toString());
                 memberResponse.setData(followData);
             } catch (Exception e) {
-                logger.error("Unable to save member", e);
+                logger.error("Unable to save follow data", e);
                 memberResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
                 memberResponse.setData("error.servererror");
             }
@@ -122,23 +117,15 @@ public class FollowDataController {
 
         Member toUnfollow = memberRepository.findByLoginName(memberToUnFollow);
 
-        List<FollowData> followDataList =  owner.getFollowDataList();
-
-        FollowData followDataToRemove = null;
-        for (FollowData followData : followDataList) {
-            if (followData.getMemberToFollow().equals(toUnfollow)) {
-                followDataToRemove = followData;
-                break;
-            }
-        }
+        FollowData followDataToRemove = followDataRepository.findByOwnerAndMemberToFollow(owner, toUnfollow);
 
         if (followDataToRemove != null) {
-            owner.getFollowDataList().remove(followDataToRemove);
             try {
-                logger.info("Saving member : " + ownerMember);
-                memberRepository.save(owner);
+                logger.info("Deleting follow data");
+                followDataRepository.delete(followDataToRemove);
                 memberResponse.setStatus(HttpStatus.OK.toString());
-                memberResponse.setData(owner.getFollowDataList());
+                List<FollowData> followDataList = followDataRepository.findAllByOwnerMember(owner);
+                memberResponse.setData(followDataList);
             } catch (Exception e) {
                 logger.error("Unable to save member", e);
                 memberResponse.setStatus(HttpStatus.BAD_REQUEST.toString());

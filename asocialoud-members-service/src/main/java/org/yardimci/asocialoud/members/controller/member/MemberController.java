@@ -161,16 +161,14 @@ public class MemberController {
     public MemberResponse delete(@PathVariable Long id) {
         logger.info("Deleting user with id : " + id);
         MemberResponse memberResponse = new MemberResponse();
-        Member memberToDelete = memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
         try {
-            //todo convert to service, introduce @transactional.
-
-            // step 1 : delete member from other member's follow data
-            logger.info("Removing follow data");
-            List<FollowData> allFollowerDataOfMember = followDataRepository.findAllFollowersOfMember(memberToDelete);
+            // no need below since we added OnDelete on follow data - member attributes
+            //logger.info("Removing follow data");
+            //followDataRepository.deleteAllByOwner(memberToDelete);
+            /*List<FollowData> allFollowerDataOfMember = followDataRepository.findAllFollowersOfMember(memberToDelete);
             for (FollowData fd : allFollowerDataOfMember) {
                 followDataRepository.delete(fd);
-            }
+            }*/
             logger.info("Removing user");
             memberRepository.deleteById(id);
             memberResponse.setStatus(HttpStatus.OK.toString());

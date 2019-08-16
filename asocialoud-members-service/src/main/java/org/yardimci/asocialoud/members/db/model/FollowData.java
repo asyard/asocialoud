@@ -1,6 +1,7 @@
 package org.yardimci.asocialoud.members.db.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -18,10 +19,14 @@ public class FollowData {
     private Date followDate;
 
     //@JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "owner_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member owner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "target_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member memberToFollow;
 
     @Column(name = "allow_relaud", nullable = false)

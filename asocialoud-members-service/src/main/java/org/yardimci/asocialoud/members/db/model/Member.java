@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -24,7 +23,6 @@ public class Member {
     @Column(name = "username", nullable = false, unique = true)
     private String loginName;
 
-
     @Column(name = "realname", nullable = false)
     private String realName;
 
@@ -35,9 +33,9 @@ public class Member {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @JsonIgnore
-    @OneToMany(/*mappedBy = "memberToFollow",*/ orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<FollowData> followDataList;
+    //we really dont need the collection on the parent side of the association.
+    //@OneToMany(mappedBy = "tbl_members", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    //private List<FollowData> followDataList;
 
     public Long getId() {
         return id;
@@ -87,14 +85,6 @@ public class Member {
     @JsonProperty
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public List<FollowData> getFollowDataList() {
-        return followDataList;
-    }
-
-    public void setFollowDataList(List<FollowData> followDataList) {
-        this.followDataList = followDataList;
     }
 
     @Override

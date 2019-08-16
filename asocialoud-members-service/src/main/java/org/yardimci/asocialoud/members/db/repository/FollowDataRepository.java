@@ -17,6 +17,8 @@ public interface FollowDataRepository extends CrudRepository<FollowData, Long> {
     @Query("select fd from  FollowData fd where fd.memberToFollow = :ownerMember")
     List<FollowData> findAllFollowersOfMember(@Param("ownerMember") Member member);
 
+    void deleteAllByOwner(Member member);
+
     //boolean isFollowedByMe(@Param("ownerMember") Member askingMember, @Param("targetMember") Member targetMember);
 
     //boolean isFollowingMe(@Param("ownerMember") Member askingMember, @Param("targetMember") Member targetMember);
@@ -24,4 +26,6 @@ public interface FollowDataRepository extends CrudRepository<FollowData, Long> {
     //boolean isBlockedByMe(@Param("ownerMember") Member askingMember, @Param("targetMember") Member targetMember);
 
     boolean existsFollowDataByOwnerAndMemberToFollow(Member owner, Member memberToFollow);
+
+    FollowData findByOwnerAndMemberToFollow(Member owner, Member memberToFollow);
 }
