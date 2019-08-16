@@ -103,11 +103,14 @@
             }
         },
         created() {
-            document.title = 'Profile of ' + this.$route.params.username;
+            this.user.exists = false;
             userapi.retrieveByUserName(this.$route.params.username).then(response => {
-                this.user.exists = true;
-                this.user.realName = response.data.data.memberRealName;
-                this.user.iFollow = response.data.data.followedByMe;
+                if (response.data.status == 200) {
+                    document.title = 'Profile of ' + this.$route.params.username;
+                    this.user.exists = true;
+                    this.user.realName = response.data.data.memberRealName;
+                    this.user.iFollow = response.data.data.followedByMe;
+                }
             })
             // eslint-disable-next-line
                 .catch(e => {
