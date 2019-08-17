@@ -212,9 +212,7 @@ public class MemberController {
         return memberResponse;
     }
 
-
-
-    @PutMapping("/{userName}")
+    @PatchMapping("/{userName}")
     public MemberResponse updateMember(@RequestBody RequestMemberDto member, @PathVariable String userName) {
         logger.info("Updating user : " + userName);
         MemberResponse memberResponse = new MemberResponse();

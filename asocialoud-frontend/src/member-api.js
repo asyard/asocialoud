@@ -31,7 +31,7 @@ export default {
         }]
     }),
     // (U)pdate
-    updateByUserName: (userName, realNameText, emailTxt) => instance.put('/'+userName, {realName: realNameText, email: emailTxt}),
+    updateByUserName: (userName, realNameText, emailTxt) => instance.patch('/'+userName, {realName: realNameText, email: emailTxt}),
 
     // (D)elete
     //removeForId: (id) => instance.delete('/'+id),
