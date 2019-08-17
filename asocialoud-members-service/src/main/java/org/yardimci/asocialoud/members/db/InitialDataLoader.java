@@ -26,14 +26,14 @@ public class InitialDataLoader implements ApplicationListener<ContextRefreshedEv
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         logger.info("Initializing data");
-        Member admin = memberRepository.findByLoginName("admin");
+        Member admin = memberRepository.findByLoginName("testmem");
         if (admin == null) {
             admin = new Member();
-            admin.setLoginName("admin");
-            admin.setMemberType(MemberType.A);
-            admin.setPassword(passwordEncoder.encode("admin"));
-            admin.setEmail("admin");
-            admin.setRealName("admin");
+            admin.setLoginName("testmem");
+            admin.setMemberType(MemberType.T);
+            admin.setPassword(passwordEncoder.encode("111222333"));
+            admin.setEmail("testmem@mail.net");
+            admin.setRealName("Test Member");
             memberRepository.save(admin);
         }
         logger.info("Data initialization completed");

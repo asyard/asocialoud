@@ -2,7 +2,7 @@ package org.yardimci.asocialoud.members.db.model;
 
 public enum MemberType {
 
-    B("Basic"), V("VIP"), A("Admin"), P("Passive");
+    B("Basic"), V("VIP"), T("Test"), P("Passive");
 
     private String description;
 

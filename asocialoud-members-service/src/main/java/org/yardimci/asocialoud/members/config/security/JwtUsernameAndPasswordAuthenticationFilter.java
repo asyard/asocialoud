@@ -90,7 +90,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                                             Authentication auth) throws IOException, ServletException {
 
         User user = (User) auth.getPrincipal();
-        Long now = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
         String token = Jwts.builder()
                 .setSubject(auth.getName())
                 // Convert to list of strings.

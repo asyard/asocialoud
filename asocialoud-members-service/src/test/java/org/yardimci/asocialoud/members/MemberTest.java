@@ -39,8 +39,8 @@ public class MemberTest {
 
     private String authenticateAndGetToken() {
         Response response = given().contentType(ContentType.JSON).body("{\n" +
-                "\t\"username\" : \"admin\",\n" +
-                "\t\"password\" : \"admin\"\n" +
+                "\t\"username\" : \"testmem\",\n" +
+                "\t\"password\" : \"111222333\"\n" +
                 "}").get("/api/members/login");
         response.then().statusCode(HttpStatus.SC_OK);
 
