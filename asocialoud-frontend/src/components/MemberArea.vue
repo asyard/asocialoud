@@ -24,7 +24,7 @@
         <div v-if="hasFollowFeedData">
             <h4>Your followings' feeds</h4>
             <b-list-group>
-                <b-list-group-item v-for="feed in ffeeds" :key="feed.id">{{feed.text}} <br/> {{feed.publishDate | moment("DD.MM.YYYY hh:mm:ss")}} {{feed.memberId}}</b-list-group-item>
+                <b-list-group-item v-for="feed in ffeeds" :key="feed.id">{{feed.text}} <br/> {{feed.publishDate | moment("DD.MM.YYYY hh:mm:ss")}} <br/> from: {{feed.memberLoginName}}</b-list-group-item>
             </b-list-group>
         </div>
 
@@ -67,15 +67,19 @@
                     text:'',
                     publishDate:'',
                 },
+                followingsFollowData: {
+                    memberId:'',
+                    loginName: ''
+                },
                 ffeeds: {
                     text:'',
                     publishDate:'',
-                    memberId:''
+                    memberId:'',
+                    memberLoginName:''
                 },
                 feedToPost: {
                     text:''
                 },
-                memberList: '',
                 errors: [],
                 users: {
                     loginName: '',
@@ -85,6 +89,15 @@
             }
         },
         methods: {
+            getMemberNameOf(memId) {
+                for (let f=0; f< this.followingsFollowData.length; f++) {
+                    if (this.followingsFollowData[f].memberToFollow.id == memId) {
+                        return this.followingsFollowData[f].memberToFollow.loginName;
+                    }
+                }
+
+                return 'n/a';
+            },
             createNewFeed() {
                 this.hasError = false;
                 feedapi.addFeed(store.getters.getUniqueId, this.feedToPost.text).then(response => {
@@ -115,14 +128,18 @@
             listFollowingFeeds() {
                 this.hasError = false;
                 this.hasFeedData = false;
-                var followIds;
-                followapi.getFollowingIds(store.getters.getUserName).then(response => {
+                followapi.getFollowing(store.getters.getUserName).then(response => {
                     if (response.data.status == 200) {
-                        followIds = response.data.data;
+                        this.followingsFollowData = response.data.data;
+
+                        let followIds = this.followingsFollowData.map(a => a.memberToFollow.id);
                         if (followIds.length > 0) {
                             feedapi.getFeedsOfFollowing(followIds).then(response => {
                                 if (response.data.status == 200) {
                                     this.ffeeds = response.data.data;
+                                    for (let f = 0; f < this.ffeeds.length; f++) {
+                                        this.ffeeds[f].memberLoginName = this.getMemberNameOf(this.ffeeds[f].memberId);
+                                    }
                                     this.hasFollowFeedData = true;
                                 }
 

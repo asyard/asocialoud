@@ -4,7 +4,7 @@ const SERVER_URL = 'http://localhost:8070/api/members';
 
 const instance = axios.create({
     baseURL: SERVER_URL,
-    timeout: 1000,
+    timeout: 5000,
     //headers: {
     //    'Access-Control-Allow-Origin': 'http://localhost:8070'
     //}
@@ -39,6 +39,8 @@ export default {
     removeForUserName: (userName) => instance.delete('/'+userName),
 
     retrieveByUserName: (userName) => instance.get('/'+userName),
+
+    retrieveById: (userId) => instance.get('/id/'+userId),
 
     getFiltered: (userName) => instance.get('/search/'+userName, {
         transformResponse: [function (data) {

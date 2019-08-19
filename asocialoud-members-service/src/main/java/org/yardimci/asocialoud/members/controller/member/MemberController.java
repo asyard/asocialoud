@@ -79,15 +79,21 @@ public class MemberController {
     }
 
     @GetMapping("/id/{id}")
-    public Member findMemberById(@PathVariable Long id) {
+    public MemberResponse findMemberById(@PathVariable Long id) {
         logger.info("Retrieving member by id : " + id);
+        MemberResponse memberResponse = new MemberResponse();
+
         Optional<Member> member = memberRepository.findById(id);
 
         if (!member.isPresent())
             throw new MemberNotFoundException("id-" + id);
             //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         //return memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
-        return member.get();
+
+        memberResponse.setData(member.get());
+        memberResponse.setStatus(member.isPresent() ? HttpStatus.OK.toString() : HttpStatus.NOT_FOUND.toString());
+        return memberResponse;
+
     }
 
 
