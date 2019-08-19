@@ -23,6 +23,7 @@ const options = {
 
 Vue.use(BootstrapVue);
 Vue.use(VueLogger, options);
+Vue.use(require('vue-moment'));
 
 new Vue({
     router,

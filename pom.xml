@@ -13,6 +13,8 @@
     <modules>
         <module>asocialoud-members-service</module>
         <module>asocialoud-frontend</module>
+        <module>asocialoud-eureka-server</module>
+        <module>asocialoud-feeds-service</module>
     </modules>
 
     <parent>

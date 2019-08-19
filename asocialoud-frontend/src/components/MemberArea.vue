@@ -1,8 +1,36 @@
 <template>
     <div class="user">
 
-        <h2>Hello {{loggedInUserName}}, this is your feed</h2>
+        <h2>Hello {{loggedInUserRealName}}, this is your feed</h2>
 
+        Add New Feed <br/>
+        <form @submit.prevent="createNewFeed()">
+            <textarea type="text" v-model="feedToPost.text" placeholder="say something"> </textarea> <br/>
+
+            <b-btn variant="success" type="submit">Share</b-btn>
+        </form>
+
+
+        <b-btn @click="listFeeds()">List Your Feeds</b-btn>
+        <b-btn @click="listFollowingFeeds()">List Your Followings' Feeds</b-btn>
+
+        <div v-if="hasFeedData">
+            <h4>My feeds</h4>
+            <b-list-group>
+                <b-list-group-item v-for="feed in feeds" :key="feed.id">{{feed.text}} <br/> {{feed.publishDate | moment("DD.MM.YYYY hh:mm:ss")}}</b-list-group-item>
+            </b-list-group>
+        </div>
+
+        <div v-if="hasFollowFeedData">
+            <h4>Your followings' feeds</h4>
+            <b-list-group>
+                <b-list-group-item v-for="feed in ffeeds" :key="feed.id">{{feed.text}} <br/> {{feed.publishDate | moment("DD.MM.YYYY hh:mm:ss")}} {{feed.memberId}}</b-list-group-item>
+            </b-list-group>
+        </div>
+
+        <div v-if="hasError">
+            Opps, something went wrong.
+        </div>
 
         <div id="listmembers">
             <b-btn @click="listMembers()">List Members</b-btn>
@@ -22,6 +50,8 @@
 
 <script>
     import userapi from '../member-api';
+    import feedapi from '../feed-api';
+    import followapi from '../follow-api';
     import store from '../store';
 
     export default {
@@ -29,7 +59,22 @@
         data() {
             return {
                 hasData : false,
-                loggedInUserName: store.getters.getRealName,
+                hasFeedData: false,
+                hasFollowFeedData: false,
+                hasError: false,
+                loggedInUserRealName: store.getters.getRealName,
+                feeds: {
+                    text:'',
+                    publishDate:'',
+                },
+                ffeeds: {
+                    text:'',
+                    publishDate:'',
+                    memberId:''
+                },
+                feedToPost: {
+                    text:''
+                },
                 memberList: '',
                 errors: [],
                 users: {
@@ -40,6 +85,62 @@
             }
         },
         methods: {
+            createNewFeed() {
+                this.hasError = false;
+                feedapi.addFeed(store.getters.getUniqueId, this.feedToPost.text).then(response => {
+                    if (response.data.status = 200) {
+                        this.feedToPost.text = '';
+                        this.listFeeds();
+                    }
+                })
+                    .catch(e => {
+                        this.hasError = true;
+                })
+            },
+            listFeeds() {
+                this.hasFollowFeedData = false;
+                this.hasError = false;
+                feedapi.getFeedsOf(store.getters.getUniqueId).then(response => {
+                    if (response.data.status == 200) {
+                        this.feeds = response.data.data;
+                        this.hasFeedData = true;
+                    }
+
+                })
+                    .catch(e => {
+                        this.hasError = true;
+                    })
+            },
+
+            listFollowingFeeds() {
+                this.hasError = false;
+                this.hasFeedData = false;
+                var followIds;
+                followapi.getFollowingIds(store.getters.getUserName).then(response => {
+                    if (response.data.status == 200) {
+                        followIds = response.data.data;
+                        if (followIds.length > 0) {
+                            feedapi.getFeedsOfFollowing(followIds).then(response => {
+                                if (response.data.status == 200) {
+                                    this.ffeeds = response.data.data;
+                                    this.hasFollowFeedData = true;
+                                }
+
+                            })
+                                .catch(e => {
+                                    this.hasError = true;
+                                });
+                        }
+                    }
+
+                    })
+                    .catch(e => {
+                        this.hasError = true;
+                    });
+
+
+            },
+
             listMembers() {
                 userapi.getAll().then(response => {
                     // JSON responses are automatically parsed.
@@ -48,9 +149,8 @@
                 })
                     .catch(e => {
                         this.hasData = false;
-                        this.loginError = true;
                         this.errors.push(e);
-                        this.users = e;
+                        this.users = [];
                     })
             },
 
@@ -62,9 +162,8 @@
                 })
                     .catch(e => {
                         this.hasData = false;
-                        this.loginError = true;
                         this.errors.push(e);
-                        this.users = e;
+                        this.users = [];
                     })
             }
         }

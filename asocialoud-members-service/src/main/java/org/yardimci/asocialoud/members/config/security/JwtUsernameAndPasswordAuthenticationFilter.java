@@ -141,11 +141,13 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
     private static class SuccessfulAuthenticationResponseData {
         private String /*loginName,*/ realName, token;
+        private Long id;
 
         public SuccessfulAuthenticationResponseData(Member member, String token) {
             //this.loginName = member.getLoginName();
             this.realName = member.getRealName();
             this.token = token;
+            this.id = member.getId();
         }
 
         /*public String getLoginName() {
@@ -170,6 +172,14 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
         public void setToken(String token) {
             this.token = token;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
         }
     }
 

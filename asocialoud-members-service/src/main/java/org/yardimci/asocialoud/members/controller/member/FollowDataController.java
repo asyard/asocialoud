@@ -12,6 +12,7 @@ import org.yardimci.asocialoud.members.db.repository.FollowDataRepository;
 import org.yardimci.asocialoud.members.db.repository.MemberRepository;
 import org.yardimci.asocialoud.members.dto.RequestMemberDto;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +38,27 @@ public class FollowDataController {
 
         List<FollowData> followDataList = followDataRepository.findAllByOwnerMember(owner);
         memberResponse.setData(followDataList);
+        memberResponse.setStatus(HttpStatus.OK.toString());
+        return memberResponse;
+    }
+
+    @GetMapping("/of/{userName}/ids")
+    public MemberResponse findFollowingIds(@PathVariable("userName") String userNameToQuery) {
+        logger.info("Retrieving all following members of : " + userNameToQuery);
+        MemberResponse memberResponse = new MemberResponse();
+
+        Member owner = memberRepository.findByLoginName(userNameToQuery);
+
+        List<Long> ids = new ArrayList<>();
+
+        if (owner != null) {
+            List<FollowData> followDataList = followDataRepository.findAllByOwnerMember(owner);
+            if (followDataList != null) {
+                followDataList.forEach(i -> ids.add(i.getMemberToFollow().getId()));
+            }
+        }
+
+        memberResponse.setData(ids);
         memberResponse.setStatus(HttpStatus.OK.toString());
         return memberResponse;
     }

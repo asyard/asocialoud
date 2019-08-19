@@ -21,7 +21,8 @@ export default new Vuex.Store({
         token: '',
         loginError: false,
         userName: null,
-        realName: null
+        realName: null,
+        uniqueId: ''
     },
     //plugins: [vuexLocalStorage.plugin],
     plugins: [createPersistedState()],
@@ -30,6 +31,7 @@ export default new Vuex.Store({
             state.loginSuccess = true;
             state.userName = payload.userName;
             state.realName = payload.realName;
+            state.uniqueId = payload.uniqueId;
             state.token = payload.token;
         },
         login_error(state, payload){
@@ -37,6 +39,7 @@ export default new Vuex.Store({
             state.loginSuccess = false;
             state.userName = payload.userName;
             state.realName = null;
+            state.uniqueId = '';
             state.token = '';
         },
         login_terminate(state, payload){
@@ -44,6 +47,7 @@ export default new Vuex.Store({
             state.loginError = false;
             state.userName = payload.userName;
             state.realName = null;
+            state.uniqueId = '';
             state.token = '';
         },
         login_refresh(state, payload){
@@ -65,7 +69,8 @@ export default new Vuex.Store({
                             commit('login_success', {
                                 userName: username,
                                 realName: response.data.data.realName,
-                                token: response.data.data.token
+                                token: response.data.data.token,
+                                uniqueId: response.data.data.id
                             });
                         }
                         resolve(response)
@@ -97,5 +102,6 @@ export default new Vuex.Store({
         hasLoginErrored: state => state.loginError,
         getUserName: state => state.userName,
         getRealName: state => state.realName,
+        getUniqueId: state => state.uniqueId,
     }
 })
