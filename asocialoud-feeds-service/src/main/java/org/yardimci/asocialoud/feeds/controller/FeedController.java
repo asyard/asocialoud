@@ -4,6 +4,7 @@ package org.yardimci.asocialoud.feeds.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +24,12 @@ public class FeedController {
     private FeedRepository feedRepository;
 
     //@LoadBalanced
-    //todo paging, get last 50 feeds etc
     @GetMapping("/of/{memberId}")
-    public FeedResponse findFeeds(@PathVariable("memberId") Long memberId) {
+    public FeedResponse findFeeds(@PathVariable("memberId") Long memberId, @RequestParam(value = "start", required = false) Integer start) {
         logger.info("Retrieving all feeds of : " + memberId);
         FeedResponse feedResponse = new FeedResponse();
 
-        List<Feed> feeds = feedRepository.findAllByMemberIdOrderByPublishDateDesc(memberId);
+        List<Feed> feeds = feedRepository.findAllByMemberIdOrderByPublishDateDesc(memberId, PageRequest.of(start==null ? 0 : start.intValue(), FeedRepository.FETCH_COUNT));
 
         feedResponse.setData(feeds);
         feedResponse.setStatus(HttpStatus.OK.toString());

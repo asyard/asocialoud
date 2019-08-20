@@ -10,13 +10,13 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.yardimci.asocialoud.feeds.db.model.Feed;
 import org.yardimci.asocialoud.feeds.db.repository.FeedRepository;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -57,8 +57,39 @@ public class FeedsTest {
         Feed feed = createFeed(2L, "Feed 1 of member 2");
         feedRepository.save(feed);
 
-        List<Feed> feedsOfMember = feedRepository.findAllByMemberIdOrderByPublishDateDesc(2L);
+        List<Feed> feedsOfMember = feedRepository.findAllByMemberIdOrderByPublishDateDesc(2L, PageRequest.of(0, 5));
         assertEquals(1, feedsOfMember.size());
+
+    }
+
+    @Test
+    @Transactional
+    public void when_member_has_many_feeds_then_viewable_by_paging() {
+        Long memberId = 2L;
+
+        for (int i = 0; i < 18; i++) {
+            Feed feed = createFeed(memberId, "Feed " + i + " of member "+ memberId);
+            feedRepository.save(feed);
+        }
+
+        Long totalFeedCount = feedRepository.countByMemberId(memberId);
+        int totalPage = (int) (totalFeedCount / FeedRepository.FETCH_COUNT) + 1;
+        int lastPageFeedCount = (int) (totalFeedCount % FeedRepository.FETCH_COUNT);
+
+        List<Feed> feedsOfMember;
+        for (int p = 0; p < totalPage; p++) {
+            feedsOfMember = feedRepository.findAllByMemberIdOrderByPublishDateDesc(2L, PageRequest.of(p, FeedRepository.FETCH_COUNT));
+            if (p < totalPage - 1) {
+                assertEquals(FeedRepository.FETCH_COUNT, feedsOfMember.size());
+            } else {
+                assertEquals(lastPageFeedCount, feedsOfMember.size());
+
+                feedRepository.save(createFeed(memberId, "Another deed of member "+ memberId));
+                feedsOfMember = feedRepository.findAllByMemberIdOrderByPublishDateDesc(2L, PageRequest.of(p, FeedRepository.FETCH_COUNT));
+                assertEquals(lastPageFeedCount+1, feedsOfMember.size());
+
+            }
+        }
 
     }
 

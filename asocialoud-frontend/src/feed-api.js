@@ -8,9 +8,9 @@ const instance = axios.create({
 });
 
 export default {
-    getFeedsOf: (memberId) => instance.get('/of/'+memberId, {
+    getFeedsOf: (memberId, page) => instance.get('/of/' + memberId + '?start=' + page, {
         transformResponse: [function (data) {
-            return data? JSON.parse(data) : data;
+            return data ? JSON.parse(data) : data;
         }]
     }),
 

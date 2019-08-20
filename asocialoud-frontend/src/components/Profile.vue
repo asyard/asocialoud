@@ -66,6 +66,7 @@
                 <b-list-group>
                     <b-list-group-item v-for="feed in feeds" :key="feed.id">{{feed.text}} <br/> {{feed.publishDate | moment("DD.MM.YYYY hh:mm:ss")}}</b-list-group-item>
                 </b-list-group>
+                <b-btn @click="listUserFeeds">load older</b-btn>
             </div>
 
             <div v-else-if="hasError">Opps. Something bad happened</div>
@@ -99,6 +100,7 @@
                 followersDivEnabled: false,
                 hasError: false,
                 hasProfileFeedData: false,
+                profileFeedDataCursor: 0,
                 message: '',
                 user: {
                     realName: '',
@@ -226,10 +228,15 @@
             listUserFeeds() {
                 this.hasProfileFeedData = false;
                 this.hasError = false;
-                feedapi.getFeedsOf(this.user.id).then(response => {
+                feedapi.getFeedsOf(this.user.id, this.profileFeedDataCursor).then(response => {
                     if (response.data.status == 200) {
-                        this.feeds = response.data.data;
+                        if (this.profileFeedDataCursor == 0) {
+                            this.feeds = response.data.data;
+                        } else {
+                            this.feeds.push.apply(this.feeds,response.data.data)
+                        }
                         this.hasProfileFeedData = true;
+                        this.profileFeedDataCursor++;
                     }
 
                 })

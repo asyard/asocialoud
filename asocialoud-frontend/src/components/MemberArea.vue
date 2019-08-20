@@ -11,7 +11,7 @@
         </form>
 
 
-        <b-btn @click="listFeeds()">List Your Feeds</b-btn>
+        <b-btn @click="listFeeds(true)">List Your Feeds</b-btn>
         <b-btn @click="listFollowingFeeds()">List Your Followings' Feeds</b-btn>
         <b-btn @click="listMembers()">List Members</b-btn>
 
@@ -22,6 +22,7 @@
                     moment("DD.MM.YYYY hh:mm:ss")}}
                 </b-list-group-item>
             </b-list-group>
+            <b-btn @click="listFeeds(false)">load older</b-btn>
         </div>
 
         <div v-if="hasFollowFeedData">
@@ -62,6 +63,7 @@
             return {
                 hasMemberData: false,
                 hasFeedData: false,
+                feedDataCursor: 0,
                 hasFollowFeedData: false,
                 hasError: false,
                 loggedInUserRealName: store.getters.getRealName,
@@ -112,20 +114,29 @@
                         this.hasError = true;
                     })
             },
-            listFeeds() {
+            listFeeds(clear) {
                 this.hasMemberData = false;
                 this.hasFollowFeedData = false;
                 this.hasError = false;
-                feedapi.getFeedsOf(store.getters.getUniqueId).then(response => {
+                if (clear) {
+                    this.feeds = [];
+                    this.feedDataCursor = 0;
+                }
+                feedapi.getFeedsOf(store.getters.getUniqueId, this.feedDataCursor).then(response => {
                     if (response.data.status == 200) {
-                        this.feeds = response.data.data;
+                        if (this.feedDataCursor == 0) {
+                            this.feeds = response.data.data;
+                        } else {
+                            this.feeds.push.apply(this.feeds, response.data.data);
+                        }
                         this.hasFeedData = true;
+                        this.feedDataCursor++;
                     }
 
                 })
                     .catch(e => {
                         this.hasError = true;
-                    })
+                    });
             },
 
             listFollowingFeeds() {
