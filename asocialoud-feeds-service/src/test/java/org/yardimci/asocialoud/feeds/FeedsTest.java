@@ -57,7 +57,7 @@ public class FeedsTest {
         Feed feed = createFeed(2L, "Feed 1 of member 2");
         feedRepository.save(feed);
 
-        List<Feed> feedsOfMember = feedRepository.findAllByMemberId(2L);
+        List<Feed> feedsOfMember = feedRepository.findAllByMemberIdOrderByPublishDateDesc(2L);
         assertEquals(1, feedsOfMember.size());
 
     }
@@ -79,7 +79,7 @@ public class FeedsTest {
 
         Long[] memberIds = {2L, 3L};
 
-        List<Feed> feedsOfMember = feedRepository.findAllByMemberIdInAndPublishDateAfter(memberIds, feedsAfter);
+        List<Feed> feedsOfMember = feedRepository.findAllByMemberIdInAndPublishDateAfterOrderByPublishDateDesc(memberIds, feedsAfter);
         assertEquals(3, feedsOfMember.size());
 
     }

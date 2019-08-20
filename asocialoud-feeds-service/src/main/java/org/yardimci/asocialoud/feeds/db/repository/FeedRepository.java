@@ -9,10 +9,10 @@ import java.util.List;
 public interface FeedRepository extends CrudRepository<Feed, Long> {
 
     //todo Pageable
-    List<Feed> findAllByMemberId(Long memberId);
+    List<Feed> findAllByMemberIdOrderByPublishDateDesc(Long memberId);
 
-    List<Feed> findAllByMemberIdInAndPublishDateAfter(Long[] memberIds, Date publishDateAfter);
+    List<Feed> findAllByMemberIdInAndPublishDateAfterOrderByPublishDateDesc(Long[] memberIds, Date publishDateAfter);
 
-    List<Feed> findAllByMemberIdIn(Long[] memberIds);
+    List<Feed> findAllByMemberIdInOrderByPublishDateDesc(Long[] memberIds);
 
 }

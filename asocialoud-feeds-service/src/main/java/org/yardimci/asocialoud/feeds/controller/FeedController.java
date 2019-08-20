@@ -29,7 +29,7 @@ public class FeedController {
         logger.info("Retrieving all feeds of : " + memberId);
         FeedResponse feedResponse = new FeedResponse();
 
-        List<Feed> feeds = feedRepository.findAllByMemberId(memberId);
+        List<Feed> feeds = feedRepository.findAllByMemberIdOrderByPublishDateDesc(memberId);
 
         feedResponse.setData(feeds);
         feedResponse.setStatus(HttpStatus.OK.toString());
@@ -53,7 +53,7 @@ public class FeedController {
             return feedResponse;
         }
 
-        List<Feed> feeds = dateAfter == null ? feedRepository.findAllByMemberIdIn(memberIds) : feedRepository.findAllByMemberIdInAndPublishDateAfter(memberIds, dateAfter);
+        List<Feed> feeds = dateAfter == null ? feedRepository.findAllByMemberIdInOrderByPublishDateDesc(memberIds) : feedRepository.findAllByMemberIdInAndPublishDateAfterOrderByPublishDateDesc(memberIds, dateAfter);
 
         feedResponse.setData(feeds);
         feedResponse.setStatus(HttpStatus.OK.toString());
