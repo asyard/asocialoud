@@ -36,6 +36,9 @@
                 <li>
                     <a :href="$router.resolve('/profile/'+$store.getters.getUserName).href">My Profile</a>
                 </li>
+                <li>
+                    <a @click="logout" href="#">Logout</a>
+                </li>
             </ul>
         </div>
         <router-view/>
@@ -110,6 +113,15 @@
                 // eslint-disable-next-line
                     .catch(e => {
                         this.hasError = true;
+                    })
+            }, logout() {
+                this.$store.dispatch("logout", {})
+                    .then(() => {
+                        window.location.href = "/";
+                        //this.$router.push('/');
+                    })
+                    .catch(e => {
+                        this.errors.push(e);
                     })
             }
         }

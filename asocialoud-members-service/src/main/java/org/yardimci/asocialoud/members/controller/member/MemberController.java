@@ -43,6 +43,7 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
+    //todo pre-authorize for admin
     @GetMapping
     public MemberResponse findAll() {
         logger.info("Retrieving all members");
@@ -110,6 +111,7 @@ public class MemberController {
             ModelMapper modelMapper = new ModelMapper();
             for (Member resultMember : byLoginName) {
                 MemberSearchResultDto dto = modelMapper.map(resultMember, MemberSearchResultDto.class);
+                dto.setId(-1L);
                 dto.setFollowedByMe(followDataRepository.existsFollowDataByOwnerAndMemberToFollow(ownerMember, resultMember));
                 dto.setFollowsMe(followDataRepository.existsFollowDataByOwnerAndMemberToFollow(resultMember, ownerMember));
                 searchResultList.add(dto);

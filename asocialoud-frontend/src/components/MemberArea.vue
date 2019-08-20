@@ -13,18 +13,23 @@
 
         <b-btn @click="listFeeds()">List Your Feeds</b-btn>
         <b-btn @click="listFollowingFeeds()">List Your Followings' Feeds</b-btn>
+        <b-btn @click="listMembers()">List Members</b-btn>
 
         <div v-if="hasFeedData">
             <h4>My feeds</h4>
             <b-list-group>
-                <b-list-group-item v-for="feed in feeds" :key="feed.id">{{feed.text}} <br/> {{feed.publishDate | moment("DD.MM.YYYY hh:mm:ss")}}</b-list-group-item>
+                <b-list-group-item v-for="feed in feeds" :key="feed.id">{{feed.text}} <br/> {{feed.publishDate |
+                    moment("DD.MM.YYYY hh:mm:ss")}}
+                </b-list-group-item>
             </b-list-group>
         </div>
 
         <div v-if="hasFollowFeedData">
             <h4>Your followings' feeds</h4>
             <b-list-group>
-                <b-list-group-item v-for="feed in ffeeds" :key="feed.id">{{feed.text}} <br/> {{feed.publishDate | moment("DD.MM.YYYY hh:mm:ss")}} <br/> from: {{feed.memberLoginName}}</b-list-group-item>
+                <b-list-group-item v-for="feed in ffeeds" :key="feed.id">{{feed.text}} <br/> {{feed.publishDate |
+                    moment("DD.MM.YYYY hh:mm:ss")}} <br/> from: {{feed.memberLoginName}}
+                </b-list-group-item>
             </b-list-group>
         </div>
 
@@ -32,17 +37,14 @@
             Opps, something went wrong.
         </div>
 
-        <div id="listmembers">
-            <b-btn @click="listMembers()">List Members</b-btn>
+        <div v-if="hasMemberData">
+            <h5>Here are all members : </h5>
 
-
-            <div v-if="hasData">
-                <h5>Here are all members : </h5>
-
-                <b-list-group>
-                    <b-list-group-item v-for="user in users" :key="user.id">{{user.loginName}} {{user.realName}} <b-btn @click="deleteSelected(user.loginName)">delete</b-btn></b-list-group-item>
-                </b-list-group>
-            </div>
+            <b-list-group>
+                <b-list-group-item v-for="user in users" :key="user.id">{{user.loginName}} {{user.realName}}
+                    <b-btn @click="deleteSelected(user.loginName)">delete</b-btn>
+                </b-list-group-item>
+            </b-list-group>
         </div>
 
     </div>
@@ -58,27 +60,27 @@
         name: "MemberArea",
         data() {
             return {
-                hasData : false,
+                hasMemberData: false,
                 hasFeedData: false,
                 hasFollowFeedData: false,
                 hasError: false,
                 loggedInUserRealName: store.getters.getRealName,
                 feeds: {
-                    text:'',
-                    publishDate:'',
+                    text: '',
+                    publishDate: '',
                 },
                 followingsFollowData: {
-                    memberId:'',
+                    memberId: '',
                     loginName: ''
                 },
                 ffeeds: {
-                    text:'',
-                    publishDate:'',
-                    memberId:'',
-                    memberLoginName:''
+                    text: '',
+                    publishDate: '',
+                    memberId: '',
+                    memberLoginName: ''
                 },
                 feedToPost: {
-                    text:''
+                    text: ''
                 },
                 errors: [],
                 users: {
@@ -90,7 +92,7 @@
         },
         methods: {
             getMemberNameOf(memId) {
-                for (let f=0; f< this.followingsFollowData.length; f++) {
+                for (let f = 0; f < this.followingsFollowData.length; f++) {
                     if (this.followingsFollowData[f].memberToFollow.id == memId) {
                         return this.followingsFollowData[f].memberToFollow.loginName;
                     }
@@ -108,9 +110,10 @@
                 })
                     .catch(e => {
                         this.hasError = true;
-                })
+                    })
             },
             listFeeds() {
+                this.hasMemberData = false;
                 this.hasFollowFeedData = false;
                 this.hasError = false;
                 feedapi.getFeedsOf(store.getters.getUniqueId).then(response => {
@@ -126,6 +129,7 @@
             },
 
             listFollowingFeeds() {
+                this.hasMemberData = false;
                 this.hasError = false;
                 this.hasFeedData = false;
                 followapi.getFollowing(store.getters.getUserName).then(response => {
@@ -150,7 +154,7 @@
                         }
                     }
 
-                    })
+                })
                     .catch(e => {
                         this.hasError = true;
                     });
@@ -159,13 +163,15 @@
             },
 
             listMembers() {
+                this.hasFeedData = false;
+                this.hasFollowFeedData = false;
                 userapi.getAll().then(response => {
                     // JSON responses are automatically parsed.
                     this.users = response.data.data;
-                    this.hasData = true;
+                    this.hasMemberData = true;
                 })
                     .catch(e => {
-                        this.hasData = false;
+                        this.hasMemberData = false;
                         this.errors.push(e);
                         this.users = [];
                     })
@@ -178,7 +184,6 @@
                     this.listMembers();
                 })
                     .catch(e => {
-                        this.hasData = false;
                         this.errors.push(e);
                         this.users = [];
                     })
@@ -188,8 +193,8 @@
 </script>
 
 <style scoped>
-li {
-    display: list-item;
+    li {
+        display: list-item;
 
-}
+    }
 </style>
