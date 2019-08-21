@@ -13,8 +13,7 @@ public interface FeedRepository extends PagingAndSortingRepository<Feed, Long> {
 
     Long countByMemberId(Long memberId);
 
-    //todo Pageable
-    List<Feed> findAllByMemberIdInAndPublishDateAfterOrderByPublishDateDesc(Long[] memberIds, Date publishDateAfter);
+    List<Feed> findAllByMemberIdInAndPublishDateAfterOrderByPublishDateDesc(Long[] memberIds, Date publishDateAfter, Pageable pageable);
 
     List<Feed> findAllByMemberIdOrderByPublishDateDesc(Long memberId, Pageable pageable);
 

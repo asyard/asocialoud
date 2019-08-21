@@ -60,13 +60,13 @@
             <span v-if="user.iFollow"><b-btn @click="unfollowSelected($route.params.username)">unfollow</b-btn></span>
             <br/>
 
-            <b-btn @click="listUserFeeds()">List Feeds</b-btn>
+            <b-btn @click="listUserFeeds(true)">List Feeds</b-btn>
             <div v-if="hasProfileFeedData" class="scrollable">
                 <h4>{{$route.params.username}} feeds</h4>
                 <b-list-group>
                     <b-list-group-item v-for="feed in feeds" :key="feed.id">{{feed.text}} <br/> {{feed.publishDate | moment("DD.MM.YYYY hh:mm:ss")}}</b-list-group-item>
                 </b-list-group>
-                <b-btn @click="listUserFeeds" v-if="stillHasContent">load older</b-btn>
+                <b-btn @click="listUserFeeds(false)" v-if="stillHasContent">load older</b-btn>
             </div>
 
             <div v-else-if="hasError">Opps. Something bad happened</div>
@@ -226,9 +226,14 @@
                     })
             },
 
-            listUserFeeds() {
+            listUserFeeds(clear) {
                 this.hasProfileFeedData = false;
                 this.hasError = false;
+                if (clear) {
+                    this.feeds = [];
+                    this.profileFeedDataCursor = 0;
+                    this.stillHasContent = true;
+                }
                 feedapi.getFeedsOf(this.user.id, this.profileFeedDataCursor).then(response => {
                     if (response.data.status == 200) {
                         if (this.profileFeedDataCursor == 0) {
@@ -246,7 +251,7 @@
                 })
                     .catch(e => {
                         this.hasError = true;
-                    })
+                    });
             },
 
             deleteAccount() {

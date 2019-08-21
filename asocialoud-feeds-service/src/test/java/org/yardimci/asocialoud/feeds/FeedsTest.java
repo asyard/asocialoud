@@ -57,7 +57,7 @@ public class FeedsTest {
         Feed feed = createFeed(2L, "Feed 1 of member 2");
         feedRepository.save(feed);
 
-        List<Feed> feedsOfMember = feedRepository.findAllByMemberIdOrderByPublishDateDesc(2L, PageRequest.of(0, 5));
+        List<Feed> feedsOfMember = feedRepository.findAllByMemberIdOrderByPublishDateDesc(2L, PageRequest.of(0, FeedRepository.FETCH_COUNT));
         assertEquals(1, feedsOfMember.size());
 
     }
@@ -68,7 +68,7 @@ public class FeedsTest {
         Long memberId = 2L;
 
         for (int i = 0; i < 18; i++) {
-            Feed feed = createFeed(memberId, "Feed " + i + " of member "+ memberId);
+            Feed feed = createFeed(memberId, "Feed " + i + " of member " + memberId);
             feedRepository.save(feed);
         }
 
@@ -84,9 +84,9 @@ public class FeedsTest {
             } else {
                 assertEquals(lastPageFeedCount, feedsOfMember.size());
 
-                feedRepository.save(createFeed(memberId, "Another deed of member "+ memberId));
+                feedRepository.save(createFeed(memberId, "Another deed of member " + memberId));
                 feedsOfMember = feedRepository.findAllByMemberIdOrderByPublishDateDesc(2L, PageRequest.of(p, FeedRepository.FETCH_COUNT));
-                assertEquals(lastPageFeedCount+1, feedsOfMember.size());
+                assertEquals(lastPageFeedCount + 1, feedsOfMember.size());
 
             }
         }
@@ -110,7 +110,8 @@ public class FeedsTest {
 
         Long[] memberIds = {2L, 3L};
 
-        List<Feed> feedsOfMember = feedRepository.findAllByMemberIdInAndPublishDateAfterOrderByPublishDateDesc(memberIds, feedsAfter);
+        List<Feed> feedsOfMember = feedRepository.
+                findAllByMemberIdInAndPublishDateAfterOrderByPublishDateDesc(memberIds, feedsAfter, PageRequest.of(0, FeedRepository.FETCH_COUNT));
         assertEquals(3, feedsOfMember.size());
 
     }
