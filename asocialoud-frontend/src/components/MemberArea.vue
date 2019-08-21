@@ -5,7 +5,7 @@
 
         Add New Feed <br/>
         <form @submit.prevent="createNewFeed()">
-            <textarea type="text" v-model="feedToPost.text" placeholder="say something"> </textarea> <br/>
+            <textarea type="text" v-model="feedToPost.text" placeholder="say something" maxlength="256"> </textarea> <br/>
 
             <b-btn variant="success" type="submit">Share</b-btn>
         </form>
@@ -111,7 +111,7 @@
                 feedapi.addFeed(store.getters.getUniqueId, this.feedToPost.text).then(response => {
                     if (response.data.status = 200) {
                         this.feedToPost.text = '';
-                        this.listOwnFeeds();
+                        this.listOwnFeeds(true);
                     }
                 })
                     .catch(e => {
@@ -229,5 +229,9 @@
     .scrollable {
         height: 250px;
         overflow: auto;
+    }
+
+    textarea {
+        resize: none;
     }
 </style>
