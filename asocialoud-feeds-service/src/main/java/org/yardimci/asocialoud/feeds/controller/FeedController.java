@@ -1,6 +1,7 @@
 package org.yardimci.asocialoud.feeds.controller;
 
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +11,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.yardimci.asocialoud.feeds.db.model.Feed;
 import org.yardimci.asocialoud.feeds.db.repository.FeedRepository;
+import org.yardimci.asocialoud.feeds.dto.FeedResponseDto;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/feeds")
@@ -30,8 +34,15 @@ public class FeedController {
         FeedResponse feedResponse = new FeedResponse();
 
         List<Feed> feeds = feedRepository.findAllByMemberIdOrderByPublishDateDesc(memberId, PageRequest.of(start == null ? 0 : start.intValue(), FeedRepository.FETCH_COUNT));
+        List<FeedResponseDto> searchResultList = new ArrayList<>();
+        ModelMapper modelMapper = new ModelMapper();
+        searchResultList =
+                feeds
+                        .stream()
+                        .map(source -> modelMapper.map(source, FeedResponseDto.class))
+                        .collect(Collectors.toList());
 
-        feedResponse.setData(feeds);
+        feedResponse.setData(searchResultList);
         feedResponse.setStatus(HttpStatus.OK.toString());
         return feedResponse;
     }
@@ -55,16 +66,23 @@ public class FeedController {
 
         PageRequest pageRequest = PageRequest.of(start == null ? 0 : start.intValue(), FeedRepository.FETCH_COUNT);
 
-        List<Feed> feeds = dateAfter == null ? feedRepository.findAllByMemberIdInOrderByPublishDateDesc(memberIds, pageRequest) :
-                feedRepository.findAllByMemberIdInAndPublishDateAfterOrderByPublishDateDesc(memberIds, dateAfter);
+        List<FeedResponseDto> searchResultList = new ArrayList<>();
 
-        feedResponse.setData(feeds);
+        List<Feed> feeds = dateAfter == null ? feedRepository.findAllByMemberIdInOrderByPublishDateDesc(memberIds, pageRequest) :
+                feedRepository.findAllByMemberIdInAndPublishDateAfterOrderByPublishDateDesc(memberIds, dateAfter, pageRequest);
+
+        ModelMapper modelMapper = new ModelMapper();
+        searchResultList =
+                feeds
+                        .stream()
+                        .map(source -> modelMapper.map(source, FeedResponseDto.class))
+                        .collect(Collectors.toList());
+
+        feedResponse.setData(searchResultList);
         feedResponse.setStatus(HttpStatus.OK.toString());
         return feedResponse;
     }
 
-
-    //todo feed dto
     // todo check if member exists
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
@@ -88,7 +106,11 @@ public class FeedController {
             logger.info("Saving feed");
             feedRepository.save(newFeed);
             feedResponse.setStatus(HttpStatus.CREATED.toString());
-            feedResponse.setData(newFeed);
+
+            ModelMapper modelMapper = new ModelMapper();
+            FeedResponseDto feedResponseDto = modelMapper.map(newFeed, FeedResponseDto.class);
+
+            feedResponse.setData(feedResponseDto);
         } catch (Exception e) {
             logger.error("Unable to save feed", e);
             feedResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
