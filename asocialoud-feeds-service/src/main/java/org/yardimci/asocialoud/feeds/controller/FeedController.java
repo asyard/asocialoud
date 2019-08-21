@@ -29,7 +29,7 @@ public class FeedController {
         logger.info("Retrieving all feeds of : " + memberId);
         FeedResponse feedResponse = new FeedResponse();
 
-        List<Feed> feeds = feedRepository.findAllByMemberIdOrderByPublishDateDesc(memberId, PageRequest.of(start==null ? 0 : start.intValue(), FeedRepository.FETCH_COUNT));
+        List<Feed> feeds = feedRepository.findAllByMemberIdOrderByPublishDateDesc(memberId, PageRequest.of(start == null ? 0 : start.intValue(), FeedRepository.FETCH_COUNT));
 
         feedResponse.setData(feeds);
         feedResponse.setStatus(HttpStatus.OK.toString());
@@ -38,11 +38,11 @@ public class FeedController {
 
 
     //@LoadBalanced
-    //todo paging, get last 50 feeds etc
     //todo instead of this, ask member service for all followings
     @GetMapping("/followingsof/{memberIds}")
     public FeedResponse findFeedsOfFollowings(@PathVariable("memberIds") Long[] memberIds,
-                                              @RequestParam(value = "dateAfter", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date dateAfter) {
+                                              @RequestParam(value = "dateAfter", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date dateAfter,
+                                              @RequestParam(value = "start", required = false) Integer start) {
         logger.info("Retrieving all followings feeds");
         FeedResponse feedResponse = new FeedResponse();
 
@@ -53,7 +53,10 @@ public class FeedController {
             return feedResponse;
         }
 
-        List<Feed> feeds = dateAfter == null ? feedRepository.findAllByMemberIdInOrderByPublishDateDesc(memberIds) : feedRepository.findAllByMemberIdInAndPublishDateAfterOrderByPublishDateDesc(memberIds, dateAfter);
+        PageRequest pageRequest = PageRequest.of(start == null ? 0 : start.intValue(), FeedRepository.FETCH_COUNT);
+
+        List<Feed> feeds = dateAfter == null ? feedRepository.findAllByMemberIdInOrderByPublishDateDesc(memberIds, pageRequest) :
+                feedRepository.findAllByMemberIdInAndPublishDateAfterOrderByPublishDateDesc(memberIds, dateAfter);
 
         feedResponse.setData(feeds);
         feedResponse.setStatus(HttpStatus.OK.toString());
@@ -69,7 +72,7 @@ public class FeedController {
         logger.info("Save feed request received");
         FeedResponse feedResponse = new FeedResponse();
 
-        if (feed.getText() == null || feed.getText().isEmpty() || feed.getMemberId() == null || feed.getMemberId()<1L) {
+        if (feed.getText() == null || feed.getText().isEmpty() || feed.getMemberId() == null || feed.getMemberId() < 1L) {
             logger.warn("Missing feed info");
             feedResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
             feedResponse.setData("error.missinginformation");

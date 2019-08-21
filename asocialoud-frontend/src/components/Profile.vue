@@ -14,7 +14,7 @@
             <b-btn @click="retrieveUser()">Update Profile</b-btn>
 
 
-            <b-btn @click="deleteAccount(5)">Delete Account</b-btn>
+            <b-btn @click="deleteAccount()">Delete Account</b-btn>
 
             <div v-if="followingDivEnabled">
                 <h3>Following</h3>
@@ -61,12 +61,12 @@
             <br/>
 
             <b-btn @click="listUserFeeds()">List Feeds</b-btn>
-            <div v-if="hasProfileFeedData">
+            <div v-if="hasProfileFeedData" class="scrollable">
                 <h4>{{$route.params.username}} feeds</h4>
                 <b-list-group>
                     <b-list-group-item v-for="feed in feeds" :key="feed.id">{{feed.text}} <br/> {{feed.publishDate | moment("DD.MM.YYYY hh:mm:ss")}}</b-list-group-item>
                 </b-list-group>
-                <b-btn @click="listUserFeeds">load older</b-btn>
+                <b-btn @click="listUserFeeds" v-if="stillHasContent">load older</b-btn>
             </div>
 
             <div v-else-if="hasError">Opps. Something bad happened</div>
@@ -101,6 +101,7 @@
                 hasError: false,
                 hasProfileFeedData: false,
                 profileFeedDataCursor: 0,
+                stillHasContent:true,
                 message: '',
                 user: {
                     realName: '',
@@ -233,7 +234,10 @@
                         if (this.profileFeedDataCursor == 0) {
                             this.feeds = response.data.data;
                         } else {
-                            this.feeds.push.apply(this.feeds,response.data.data)
+                            this.feeds.push.apply(this.feeds, response.data.data);
+                            if (response.data.data.length < 1) {
+                                this.stillHasContent = false;
+                            }
                         }
                         this.hasProfileFeedData = true;
                         this.profileFeedDataCursor++;
@@ -282,5 +286,8 @@
 </script>
 
 <style scoped>
-
+    .scrollable {
+        height: 250px;
+        overflow: auto;
+    }
 </style>

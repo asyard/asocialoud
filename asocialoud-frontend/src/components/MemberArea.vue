@@ -11,34 +11,35 @@
         </form>
 
 
-        <b-btn @click="listFeeds(true)">List Your Feeds</b-btn>
-        <b-btn @click="listFollowingFeeds()">List Your Followings' Feeds</b-btn>
+        <b-btn @click="listOwnFeeds(true)">List Your Feeds</b-btn>
+        <b-btn @click="listFollowingFeeds(true)">List Your Followings' Feeds</b-btn>
         <b-btn @click="listMembers()">List Members</b-btn>
 
-        <div v-if="hasFeedData">
+        <div v-if="hasFeedData" class="scrollable">
             <h4>My feeds</h4>
             <b-list-group>
                 <b-list-group-item v-for="feed in feeds" :key="feed.id">{{feed.text}} <br/> {{feed.publishDate |
                     moment("DD.MM.YYYY hh:mm:ss")}}
                 </b-list-group-item>
             </b-list-group>
-            <b-btn @click="listFeeds(false)">load older</b-btn>
+            <b-btn @click="listOwnFeeds(false)" v-if="stillHasContent">load older</b-btn>
         </div>
 
-        <div v-if="hasFollowFeedData">
+        <div v-if="hasFollowFeedData" class="scrollable">
             <h4>Your followings' feeds</h4>
             <b-list-group>
                 <b-list-group-item v-for="feed in ffeeds" :key="feed.id">{{feed.text}} <br/> {{feed.publishDate |
                     moment("DD.MM.YYYY hh:mm:ss")}} <br/> from: {{feed.memberLoginName}}
                 </b-list-group-item>
             </b-list-group>
+            <b-btn @click="listFollowingFeeds(false)" v-if="stillHasFContent">load older</b-btn>
         </div>
 
         <div v-if="hasError">
             Opps, something went wrong.
         </div>
 
-        <div v-if="hasMemberData">
+        <div v-if="hasMemberData" class="scrollable">
             <h5>Here are all members : </h5>
 
             <b-list-group>
@@ -63,9 +64,12 @@
             return {
                 hasMemberData: false,
                 hasFeedData: false,
-                feedDataCursor: 0,
+                ownFeedDataCursor: 0,
                 hasFollowFeedData: false,
+                followingFeedDataCursor: 0,
                 hasError: false,
+                stillHasContent:true,
+                stillHasFContent:true,
                 loggedInUserRealName: store.getters.getRealName,
                 feeds: {
                     text: '',
@@ -107,30 +111,34 @@
                 feedapi.addFeed(store.getters.getUniqueId, this.feedToPost.text).then(response => {
                     if (response.data.status = 200) {
                         this.feedToPost.text = '';
-                        this.listFeeds();
+                        this.listOwnFeeds();
                     }
                 })
                     .catch(e => {
                         this.hasError = true;
                     })
             },
-            listFeeds(clear) {
+            listOwnFeeds(clear) {
                 this.hasMemberData = false;
                 this.hasFollowFeedData = false;
                 this.hasError = false;
                 if (clear) {
                     this.feeds = [];
-                    this.feedDataCursor = 0;
+                    this.ownFeedDataCursor = 0;
+                    this.stillHasContent = true;
                 }
-                feedapi.getFeedsOf(store.getters.getUniqueId, this.feedDataCursor).then(response => {
+                feedapi.getFeedsOf(store.getters.getUniqueId, this.ownFeedDataCursor).then(response => {
                     if (response.data.status == 200) {
-                        if (this.feedDataCursor == 0) {
+                        if (this.ownFeedDataCursor == 0) {
                             this.feeds = response.data.data;
                         } else {
                             this.feeds.push.apply(this.feeds, response.data.data);
+                            if (response.data.data.length < 1) {
+                                this.stillHasContent = false;
+                            }
                         }
                         this.hasFeedData = true;
-                        this.feedDataCursor++;
+                        this.ownFeedDataCursor++;
                     }
 
                 })
@@ -139,23 +147,37 @@
                     });
             },
 
-            listFollowingFeeds() {
+            listFollowingFeeds(clear) {
                 this.hasMemberData = false;
                 this.hasError = false;
                 this.hasFeedData = false;
+                if (clear) {
+                    this.ffeeds = [];
+                    this.followingFeedDataCursor = 0;
+                    this.stillHasFContent = true;
+                }
                 followapi.getFollowing(store.getters.getUserName).then(response => {
                     if (response.data.status == 200) {
                         this.followingsFollowData = response.data.data;
 
                         let followIds = this.followingsFollowData.map(a => a.memberToFollow.id);
                         if (followIds.length > 0) {
-                            feedapi.getFeedsOfFollowing(followIds).then(response => {
+                            feedapi.getFeedsOfFollowing(followIds, this.followingFeedDataCursor).then(response => {
                                 if (response.data.status == 200) {
-                                    this.ffeeds = response.data.data;
+                                    if (this.followingFeedDataCursor == 0) {
+                                        this.ffeeds = response.data.data;
+                                    } else {
+                                        this.ffeeds.push.apply(this.ffeeds, response.data.data);
+                                        if (response.data.data.length < 1) {
+                                            this.stillHasFContent = false;
+                                        }
+                                    }
+
                                     for (let f = 0; f < this.ffeeds.length; f++) {
                                         this.ffeeds[f].memberLoginName = this.getMemberNameOf(this.ffeeds[f].memberId);
                                     }
                                     this.hasFollowFeedData = true;
+                                    this.followingFeedDataCursor++;
                                 }
 
                             })
@@ -204,8 +226,8 @@
 </script>
 
 <style scoped>
-    li {
-        display: list-item;
-
+    .scrollable {
+        height: 250px;
+        overflow: auto;
     }
 </style>

@@ -14,7 +14,7 @@ export default {
         }]
     }),
 
-    getFeedsOfFollowing: (memberIdList) => instance.get('/followingsof/'+memberIdList, {
+    getFeedsOfFollowing: (memberIdList, page) => instance.get('/followingsof/'+memberIdList+'?start=' + page, {
         transformResponse: [function (data) {
             return data? JSON.parse(data) : data;
         }]
