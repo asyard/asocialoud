@@ -1,12 +1,18 @@
 <template>
     <div id="app">
 
+        <div>
+            <button v-for="entry in languages" :key="entry.title" @click="changeLocale(entry.language)">
+                <!--flag :iso="entry.flag" v-bind:squared=false /--> {{entry.title}}
+            </button>
+        </div>
+
         <div v-if="$store.getters.isLoggedIn == false">
             <img alt="App logo" src="./assets/asocialoud_logo.png" @click="home()"><br/>
             <h4>asocialoud</h4>
 
             <p>
-                Welcome to the new social platform!
+                {{$t('appTitle')}}
             </p>
         </div>
 
@@ -46,7 +52,7 @@
         <br/>
 
         <div id="footer">
-            <h4>Follow us</h4>
+            <h4>{{$t('followUs')}}</h4>
             <ul style="vertical-align: bottom">
                 <li><a href="https://twitter.com" target="_blank" rel="noopener">twitter</a></li>
                 <li><a href="https://instagram.com" target="_blank" rel="noopener">instagram</a></li>
@@ -61,12 +67,17 @@
     import userapi from './member-api';
     import followapi from './follow-api';
     import store from "./store";
+    import i18n from "./i18n";
 
 
     export default {
         name: 'app',
         data() {
             return {
+                languages: [
+                    { flag: 'uk', language: 'en', title: 'English' },
+                    { flag: 'tr', language: 'tr', title: 'Türkçe' }
+                ],
                 membernameforsearch: '',
                 searchComplete: false,
                 users: {
@@ -82,6 +93,9 @@
                 this.membernameforsearch = '';
                 this.searchComplete = false;
                 this.$router.push('/');
+            },
+            changeLocale(locale) {
+                i18n.locale = locale;
             },
             getFilteredMembers() {
                 this.users = [];
