@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const SERVER_URL = 'http://localhost:8070/api/members';
+const SERVER_URL = 'http://localhost:8020/membersrv/api/members';
 
 const instance = axios.create({
     baseURL: SERVER_URL,

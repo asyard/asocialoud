@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const SERVER_URL = 'http://localhost:8070/api/follow';
+const SERVER_URL = 'http://localhost:8020/membersrv/api/follow';
 
 const instance = axios.create({
     baseURL: SERVER_URL,

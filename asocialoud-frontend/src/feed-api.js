@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const SERVER_URL = 'http://localhost:8060/api/feeds';
+const SERVER_URL = 'http://localhost:8020/feedsrv/api/feeds';
 
 const instance = axios.create({
     baseURL: SERVER_URL,

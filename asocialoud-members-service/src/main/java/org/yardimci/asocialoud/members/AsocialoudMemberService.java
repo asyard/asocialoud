@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -24,6 +25,7 @@ import java.util.Collections;
 @EntityScan("org.yardimci.asocialoud.members.db.model")
 @SpringBootApplication // equals @Configuration, @EnableAutoConfiguration, and @ComponentScan
 //@EnableAutoConfiguration(exclude = {ErrorMvcAutoConfiguration.class})
+@EnableEurekaClient
 public class AsocialoudMemberService {
 
     private static final Logger logger = LoggerFactory.getLogger(AsocialoudMemberService.class);
