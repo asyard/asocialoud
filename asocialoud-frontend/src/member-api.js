@@ -4,7 +4,7 @@ const SERVER_URL = 'http://localhost:8020/membersrv/api/members';
 
 const instance = axios.create({
     baseURL: SERVER_URL,
-    timeout: 5000,
+    timeout: 10000,
     //headers: {
     //    'Access-Control-Allow-Origin': 'http://localhost:8070'
     //}
