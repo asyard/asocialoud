@@ -7,8 +7,6 @@
 
             Your Name : {{$store.getters.getRealName}} <br/>
 
-            <b-btn @click="logout()">Logout</b-btn>
-
             <b-btn @click="listFollowing()">Following</b-btn>
 
             <b-btn @click="listFollowers()">Your Followers</b-btn>
@@ -16,7 +14,7 @@
             <b-btn @click="retrieveUser()">Update Profile</b-btn>
 
 
-            <b-btn @click="deleteAccount(5)">Delete Account</b-btn>
+            <b-btn @click="deleteAccount()">Delete Account</b-btn>
 
             <div v-if="followingDivEnabled">
                 <h3>Following</h3>
@@ -62,7 +60,17 @@
             <span v-if="user.iFollow"><b-btn @click="unfollowSelected($route.params.username)">unfollow</b-btn></span>
             <br/>
 
-            <h3>Latest Feeds :</h3>
+            <b-btn @click="listUserFeeds(true)">List Feeds</b-btn>
+            <div v-if="hasProfileFeedData" class="scrollable">
+                <h4>{{$route.params.username}} feeds</h4>
+                <b-list-group>
+                    <b-list-group-item v-for="feed in feeds" :key="feed.id">{{feed.text}} <br/> {{feed.publishDate | moment("DD.MM.YYYY hh:mm:ss")}}</b-list-group-item>
+                </b-list-group>
+                <b-btn @click="listUserFeeds(false)" v-if="stillHasContent">load older</b-btn>
+            </div>
+
+            <div v-else-if="hasError">Opps. Something bad happened</div>
+
         </div>
 
         <div v-else>
@@ -79,6 +87,7 @@
 <script>
     import userapi from '../member-api';
     import followapi from '../follow-api';
+    import feedapi from '../feed-api';
     import store from '../store';
 
 
@@ -90,15 +99,23 @@
                 followingDivEnabled: false,
                 followersDivEnabled: false,
                 hasError: false,
+                hasProfileFeedData: false,
+                profileFeedDataCursor: 0,
+                stillHasContent:true,
                 message: '',
                 user: {
                     realName: '',
                     userName: '',
                     email: '',
+                    id: '',
                     exists: false,
                     iFollow: false,
                     iBlock: false,
                     following: []
+                },
+                feeds:{
+                    text:'',
+                    publishDate:'',
                 }
             }
         },
@@ -110,6 +127,7 @@
                     this.user.exists = true;
                     this.user.realName = response.data.data.memberRealName;
                     this.user.iFollow = response.data.data.followedByMe;
+                    this.user.id = response.data.data.id;
                 }
             })
             // eslint-disable-next-line
@@ -127,6 +145,7 @@
                     this.updateDivEnabled = true;
                     this.user.realName = response.data.data.memberRealName;
                     this.user.email = response.data.data.memberEmail;
+
                 })
                 // eslint-disable-next-line
                     .catch(e => {
@@ -207,6 +226,34 @@
                     })
             },
 
+            listUserFeeds(clear) {
+                this.hasProfileFeedData = false;
+                this.hasError = false;
+                if (clear) {
+                    this.feeds = [];
+                    this.profileFeedDataCursor = 0;
+                    this.stillHasContent = true;
+                }
+                feedapi.getFeedsOf(this.user.id, this.profileFeedDataCursor).then(response => {
+                    if (response.data.status == 200) {
+                        if (this.profileFeedDataCursor == 0) {
+                            this.feeds = response.data.data;
+                        } else {
+                            this.feeds.push.apply(this.feeds, response.data.data);
+                            if (response.data.data.length < 1) {
+                                this.stillHasContent = false;
+                            }
+                        }
+                        this.hasProfileFeedData = true;
+                        this.profileFeedDataCursor++;
+                    }
+
+                })
+                    .catch(e => {
+                        this.hasError = true;
+                    });
+            },
+
             deleteAccount() {
                 this.$bvModal.msgBoxConfirm('Are you sure? All your data will be lost', {
                     title: 'Please Confirm',
@@ -238,22 +285,14 @@
                         this.hasError = true;
                         //this.message = 'Unable to delete account. Please try later. Sorry. Really.';
                     })
-            },
-
-            logout() {
-                this.$store.dispatch("logout", {})
-                    .then(() => {
-                        window.location.href = "/";
-                        //this.$router.push('/');
-                    })
-                    .catch(e => {
-                        this.errors.push(e);
-                    })
             }
         }
     }
 </script>
 
 <style scoped>
-
+    .scrollable {
+        height: 250px;
+        overflow: auto;
+    }
 </style>

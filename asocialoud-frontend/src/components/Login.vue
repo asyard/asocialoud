@@ -1,16 +1,16 @@
 <template>
     <div class="user">
-        <h1>Login</h1>
+        <h1>{{$t('signIn')}}</h1>
 
 
         <form @submit.prevent="login()">
-            <input type="text" placeholder="username" v-model="user.userName" autofocus><br/>
-            <input type="password" placeholder="password" v-model="user.userPass"><br/>
-            <b-btn variant="success" type="submit">Login</b-btn>
-            <p v-if="loginError" class="error">Bad login information</p>
+            <input type="text" :placeholder="$t('userName')" v-model="user.userName" autofocus><br/>
+            <input type="password" :placeholder="$t('password')" v-model="user.userPass"><br/>
+            <b-btn variant="success" type="submit">{{$t('btn_login')}}</b-btn>
+            <p v-if="loginError" class="error">{{$t('err_badlogin')}}</p>
             <br/>
-            Dont't you have an account? <router-link to="/register">Create one!</router-link> <br/>
-            Forgot your login information ? <router-link to="/forgot">Let's try to recover</router-link>
+            {{$t('register_1')}} <router-link to="/register">{{$t('register_2')}}</router-link> <br/>
+            {{$t('forgot_1')}} <router-link to="/forgot">{{$t('forgot_2')}}</router-link>
         </form>
 
     </div>

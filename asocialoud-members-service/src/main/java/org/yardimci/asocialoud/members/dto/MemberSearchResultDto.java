@@ -2,12 +2,21 @@ package org.yardimci.asocialoud.members.dto;
 
 public class MemberSearchResultDto {
 
+    private Long id;
     private String memberLoginName;
     private String memberRealName;
     private String memberEmail;
     private boolean followedByMe;
     private boolean followsMe;
     private boolean blockedByMe;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getMemberLoginName() {
         return memberLoginName;

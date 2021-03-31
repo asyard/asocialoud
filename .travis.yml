@@ -1,7 +1,7 @@
 language : java
 
 jdk:
-  - oraclejdk8
+  - oraclejdk15
 
 dist: trusty
 
@@ -10,6 +10,7 @@ addons:
     organization: "asyard-github" # the key of the org you chose at step #3
 
 script:
+ - java --version
  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
  - mvn clean verify
  - mvn clean install

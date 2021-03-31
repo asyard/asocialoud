@@ -24,6 +24,12 @@ export default {
         }]
     }),
 
+    getFollowingIds: (userName) => instance.get('/of/'+userName+'/ids', {
+        transformResponse: [function (data) {
+            return data? JSON.parse(data) : data;
+        }]
+    }),
+
     addFollowing: (userName, userNameToFollow) => instance.post('/add/'+userNameToFollow, { loginName : userName}, {
         transformResponse: [function (data) {
             return data? JSON.parse(data) : data;

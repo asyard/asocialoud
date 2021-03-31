@@ -43,6 +43,7 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
+    //todo pre-authorize for admin
     @GetMapping
     public MemberResponse findAll() {
         logger.info("Retrieving all members");
@@ -79,15 +80,21 @@ public class MemberController {
     }
 
     @GetMapping("/id/{id}")
-    public Member findMemberById(@PathVariable Long id) {
-        logger.info("Retrieving member by id : " + id);
+    public MemberResponse findMemberById(@PathVariable Long id) {
+        logger.info("Retrieving member by id : {}", id);
+        MemberResponse memberResponse = new MemberResponse();
+
         Optional<Member> member = memberRepository.findById(id);
 
         if (!member.isPresent())
             throw new MemberNotFoundException("id-" + id);
             //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         //return memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
-        return member.get();
+
+        memberResponse.setData(member.get());
+        memberResponse.setStatus(member.isPresent() ? HttpStatus.OK.toString() : HttpStatus.NOT_FOUND.toString());
+        return memberResponse;
+
     }
 
 
@@ -104,6 +111,7 @@ public class MemberController {
             ModelMapper modelMapper = new ModelMapper();
             for (Member resultMember : byLoginName) {
                 MemberSearchResultDto dto = modelMapper.map(resultMember, MemberSearchResultDto.class);
+                dto.setId(-1L);
                 dto.setFollowedByMe(followDataRepository.existsFollowDataByOwnerAndMemberToFollow(ownerMember, resultMember));
                 dto.setFollowsMe(followDataRepository.existsFollowDataByOwnerAndMemberToFollow(resultMember, ownerMember));
                 searchResultList.add(dto);
@@ -140,7 +148,7 @@ public class MemberController {
         if (userInDb != null) {
             logger.warn("Member email already exists");
             memberResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
-            memberResponse.setData("error.emailistaken");
+            memberResponse.setData("error_emailistaken");
             return memberResponse;
         }
 

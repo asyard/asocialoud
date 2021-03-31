@@ -1,13 +1,15 @@
 <template>
     <div id="welcome">
+
         <div v-if="isUserLoggedIn">
-            Hello {{loggedInUserName}}, you can access your feed from <router-link to="/feed">here</router-link>
+            {{$t('welcomeMsg', {user: loggedInUserName})}} <router-link to="/feed">{{$t('here')}}</router-link>
+            <!--i18n path="welcomeMsg" tag="p"> <a place="user"></a> </i18n-->
             <router-view/>
         </div>
 
         <div v-else>
-            Sign up from <router-link to="/register">here</router-link>. <br/>
-            Already a member? <router-link to="/login">Sign in</router-link>
+            {{$t('signUpMsg')}} <router-link to="/register">{{$t('here')}}</router-link> <br/>
+            {{$t('loginMsg')}} <router-link to="/login">{{$t('signIn')}}</router-link>
             <br/>
             <router-view/>
 
