@@ -8,9 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.HtmlUtils;
+import org.springframework.web.util.UriUtils;
 import org.yardimci.asocialoud.feeds.db.model.Feed;
 import org.yardimci.asocialoud.feeds.db.repository.FeedRepository;
+import org.yardimci.asocialoud.feeds.dto.FeedDto;
 import org.yardimci.asocialoud.feeds.dto.FeedResponseDto;
 
 import java.util.ArrayList;
@@ -86,20 +90,20 @@ public class FeedController {
     // todo check if member exists
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public FeedResponse create(@RequestBody Feed feed) {
+    public FeedResponse create(@RequestBody FeedDto feedDto) {
         logger.info("Save feed request received");
         FeedResponse feedResponse = new FeedResponse();
 
-        if (feed.getText() == null || feed.getText().isEmpty() || feed.getMemberId() == null || feed.getMemberId() < 1L) {
+        if (StringUtils.isEmpty(feedDto.getText()) || feedDto.getMemberId() == null || feedDto.getMemberId() < 1L) {
             logger.warn("Missing feed info");
             feedResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
             feedResponse.setData("error.missinginformation");
             return feedResponse;
         }
         Feed newFeed = new Feed();
-        newFeed.setMemberId(feed.getMemberId());
-        newFeed.setText(feed.getText()); //todo escape chars etc
-        newFeed.setMediaUri("");
+        newFeed.setMemberId(feedDto.getMemberId());
+        newFeed.setText(HtmlUtils.htmlEscape(feedDto.getText()));
+        newFeed.setMediaUri(StringUtils.isEmpty(feedDto.getMediaUri()) ? "" : UriUtils.encodePath(feedDto.getMediaUri() , "UTF-8"));
         newFeed.setPublishDate(new Date());
 
         try {
