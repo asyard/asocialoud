@@ -1,25 +1,25 @@
 <template>
     <div class="register">
-        <h1>Register</h1>
+        <h1>{{$t('register')}}</h1>
 
         <form v-if="!showResponse" @submit.prevent="createNewUser()">
-            <input type="text" v-model="user.realName" placeholder="real name" autofocus> <br/>
-            <input type="text" v-model="user.userName" placeholder="user name"><br/>
-            <input type="text" placeholder="email" v-model="user.userEmail"><br/>
-            <input type="password" placeholder="password" v-model="user.userPass"><br/>
+            <input type="text" v-model="user.realName" :placeholder="$t('realName')" autofocus> <br/>
+            <input type="text" v-model="user.userName" :placeholder="$t('userName')"><br/>
+            <input type="text" :placeholder="$t('email')" v-model="user.userEmail"><br/>
+            <input type="password" :placeholder="$t('password')" v-model="user.userPass"><br/>
 
-            <b-btn variant="success" type="submit">Create User</b-btn>
+            <b-btn variant="success" type="submit">{{$t('btn_create')}}</b-btn>
             <br/>
-            Already a member? <router-link to="/login">Sign in</router-link>
+            {{$t('loginMsg')}} <router-link to="/login">{{$t('signIn')}}</router-link>
         </form>
 
         <div v-if="showResponse">
-            User created. Please <router-link to="/login">Sign in</router-link>
+            {{$t('registerSuccess')}} <router-link to="/login">{{$t('signIn')}}</router-link>
             <br/>
             <router-view/>
         </div>
 
-        <div v-else-if="hasError"><h6>{{ errorTxt }}</h6></div>
+        <div v-else-if="hasError"><h6>{{$t(errorTxt)}}</h6></div>
     </div>
 </template>
 

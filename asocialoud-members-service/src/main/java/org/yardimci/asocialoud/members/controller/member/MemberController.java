@@ -148,7 +148,7 @@ public class MemberController {
         if (userInDb != null) {
             logger.warn("Member email already exists");
             memberResponse.setStatus(HttpStatus.BAD_REQUEST.toString());
-            memberResponse.setData("error.emailistaken");
+            memberResponse.setData("error_emailistaken");
             return memberResponse;
         }
 
