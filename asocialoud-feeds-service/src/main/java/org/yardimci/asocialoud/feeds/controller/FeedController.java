@@ -34,13 +34,12 @@ public class FeedController {
     //@LoadBalanced
     @GetMapping("/of/{memberId}")
     public FeedResponse findFeeds(@PathVariable("memberId") Long memberId, @RequestParam(value = "start", required = false) Integer start) {
-        logger.info("Retrieving all feeds of : " + memberId);
+        logger.info("Retrieving all feeds of : {}", memberId);
         FeedResponse feedResponse = new FeedResponse();
 
         List<Feed> feeds = feedRepository.findAllByMemberIdOrderByPublishDateDesc(memberId, PageRequest.of(start == null ? 0 : start.intValue(), FeedRepository.FETCH_COUNT));
-        List<FeedResponseDto> searchResultList = new ArrayList<>();
         ModelMapper modelMapper = new ModelMapper();
-        searchResultList =
+        List<FeedResponseDto> searchResultList =
                 feeds
                         .stream()
                         .map(source -> modelMapper.map(source, FeedResponseDto.class))
@@ -70,13 +69,11 @@ public class FeedController {
 
         PageRequest pageRequest = PageRequest.of(start == null ? 0 : start.intValue(), FeedRepository.FETCH_COUNT);
 
-        List<FeedResponseDto> searchResultList = new ArrayList<>();
-
         List<Feed> feeds = dateAfter == null ? feedRepository.findAllByMemberIdInOrderByPublishDateDesc(memberIds, pageRequest) :
                 feedRepository.findAllByMemberIdInAndPublishDateAfterOrderByPublishDateDesc(memberIds, dateAfter, pageRequest);
 
         ModelMapper modelMapper = new ModelMapper();
-        searchResultList =
+        List<FeedResponseDto> searchResultList =
                 feeds
                         .stream()
                         .map(source -> modelMapper.map(source, FeedResponseDto.class))

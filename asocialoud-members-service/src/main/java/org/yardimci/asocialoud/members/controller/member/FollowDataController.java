@@ -31,7 +31,7 @@ public class FollowDataController {
 
     @GetMapping("/of/{userName}")
     public MemberResponse findFollowing(@PathVariable("userName") String userNameToQuery) {
-        logger.info("Retrieving all following members of : " + userNameToQuery);
+        logger.info("Retrieving all following members of : {}", userNameToQuery);
         MemberResponse memberResponse = new MemberResponse();
 
         Member owner = memberRepository.findByLoginName(userNameToQuery);
@@ -44,7 +44,7 @@ public class FollowDataController {
 
     @GetMapping("/of/{userName}/ids")
     public MemberResponse findFollowingIds(@PathVariable("userName") String userNameToQuery) {
-        logger.info("Retrieving all following members of : " + userNameToQuery);
+        logger.info("Retrieving all following members of : {}", userNameToQuery);
         MemberResponse memberResponse = new MemberResponse();
 
         Member owner = memberRepository.findByLoginName(userNameToQuery);

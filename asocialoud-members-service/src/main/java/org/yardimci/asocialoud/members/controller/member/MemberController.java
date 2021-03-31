@@ -81,7 +81,7 @@ public class MemberController {
 
     @GetMapping("/id/{id}")
     public MemberResponse findMemberById(@PathVariable Long id) {
-        logger.info("Retrieving member by id : " + id);
+        logger.info("Retrieving member by id : {}", id);
         MemberResponse memberResponse = new MemberResponse();
 
         Optional<Member> member = memberRepository.findById(id);
