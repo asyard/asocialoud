@@ -1,5 +1,5 @@
 FROM java:8-jre
-MAINTAINER asocialoud
+LABEL maintainer="asocialoud"
 
 # like COPY but can also fetch remote URLs, extract TAR files, etc...
 ADD ./target/asocialoud-members-service.jar /app/

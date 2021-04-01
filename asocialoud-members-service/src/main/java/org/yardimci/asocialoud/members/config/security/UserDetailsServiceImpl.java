@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.yardimci.asocialoud.members.db.model.Member;
 import org.yardimci.asocialoud.members.db.repository.MemberRepository;
@@ -16,9 +15,6 @@ import java.util.List;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService  {
-
-    @Autowired
-    private BCryptPasswordEncoder encoder;
 
     @Autowired
     private MemberRepository memberRepository;

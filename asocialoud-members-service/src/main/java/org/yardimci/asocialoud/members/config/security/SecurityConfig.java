@@ -31,11 +31,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private JwtConfig jwtConfig;
 
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     // for logged in users
     @Autowired
-    AccessDeniedHandler accessDeniedHandler;
+    private AccessDeniedHandler accessDeniedHandler;
 
     @Autowired
     private CustomAuthenticationEntryPoint unauthorizedHandler;

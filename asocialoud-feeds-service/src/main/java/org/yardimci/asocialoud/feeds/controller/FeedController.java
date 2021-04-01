@@ -17,7 +17,6 @@ import org.yardimci.asocialoud.feeds.db.repository.FeedRepository;
 import org.yardimci.asocialoud.feeds.dto.FeedDto;
 import org.yardimci.asocialoud.feeds.dto.FeedResponseDto;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;

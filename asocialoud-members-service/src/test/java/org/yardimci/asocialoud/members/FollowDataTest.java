@@ -13,7 +13,6 @@ import org.yardimci.asocialoud.members.db.model.Member;
 import org.yardimci.asocialoud.members.db.repository.FollowDataRepository;
 import org.yardimci.asocialoud.members.db.repository.MemberRepository;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
